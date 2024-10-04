@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -26,6 +27,20 @@ Route::post('/sanctum/token', function (Request $request) {
         'user' => $user->id,
     ];
 });
+
+// Email Verification
+Route::prefix('email')
+    ->name('verification.')
+    ->controller(EmailVerificationController::class)
+    ->group(function () {
+        Route::post('verification-notification', 'send')
+            ->middleware(['auth:sanctum', 'throttle:6,1'])
+            ->name('send');
+
+        Route::get('verify/{id}/{hash}', 'verify')
+            ->middleware(['signed'])
+            ->name('verify');
+    });
 
 Route::apiSingleton('user', UserController::class)
     ->destroyable()

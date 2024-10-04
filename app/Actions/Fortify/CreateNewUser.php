@@ -31,7 +31,7 @@ class CreateNewUser implements CreatesNewUsers
                 'required',
                 'string',
                 Password::default(),
-                'confirmed'
+                'confirmed',
             ],
         ])->validate();
 
