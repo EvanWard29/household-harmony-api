@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -42,6 +43,23 @@ Route::prefix('email')
             ->name('verify');
     });
 
+// Password Reset
+Route::prefix('user/password')
+    ->name('password.')
+    ->controller(PasswordResetController::class)
+    ->middleware('guest')
+    ->group(function () {
+        Route::post('forgot', 'forgot')
+            ->name('email');
+
+        Route::post('reset', 'reset')
+            ->name('update');
+    });
+
 Route::apiSingleton('user', UserController::class)
     ->destroyable()
     ->middleware('auth:sanctum');
+
+Route::get('test', function () {
+    return url()->full();
+});
