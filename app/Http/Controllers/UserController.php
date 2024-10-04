@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserController
 {
@@ -25,8 +27,13 @@ class UserController
     /**
      * Delete the requesting {@see User}
      */
-    public function destroy(): bool
+    public function destroy(Request $request): JsonResponse
     {
-        return request()->user()->delete();
+        // Delete all user tokens
+        $request->user()->tokens()->delete();
+
+        return $request->user()->delete()
+            ? response()->json(['message' => 'User deleted!'])
+            : response()->json(['message' => 'User was not deleted!'], \HttpStatus::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
