@@ -1,0 +1,79 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegistrationRequest;
+use App\Http\Requests\Auth\TokenRequest;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class AuthController
+{
+    /**
+     * Register a new user
+     */
+    public function register(RegistrationRequest $request): JsonResponse
+    {
+        User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => \Hash::make($request->input('password')),
+        ]);
+
+        return response()->json(['message' => 'Registration successful.'], 201);
+    }
+
+    /**
+     * Attempt to log in
+     */
+    public function login(LoginRequest $request): JsonResponse
+    {
+        // Attempt to authenticate
+        if (Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['message' => 'Login success!']);
+        }
+
+        return response()->json(
+            ['message' => 'The provided credentials do not match our records.'],
+            \HttpStatus::HTTP_UNAUTHORIZED
+        );
+    }
+
+    /**
+     * Remove the user's tokens for the device logging out
+     */
+    public function logout(Request $request): JsonResponse
+    {
+        $request->validate(['device_name' => 'required|string']);
+
+        // Delete the user's tokens for this device
+        $request->user()->tokens()->where('name', $request->input('device_name'))->delete();
+
+        return response()->json(['message' => 'Logout success!']);
+    }
+
+    /**
+     * Request a new Sanctum token for the user
+     */
+    public function token(TokenRequest $request): JsonResponse
+    {
+        $user = User::firstWhere('email', $request->input('email'));
+
+        // Attempt to authenticate and return a new token
+        if (Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'token' => $user->createToken(
+                    $request->input('device_name')
+                )->plainTextToken
+            ]);
+        }
+
+        return response()->json(
+            ['message' => 'The provided credentials do not match our records.'],
+            \HttpStatus::HTTP_UNAUTHORIZED
+        );
+    }
+}
