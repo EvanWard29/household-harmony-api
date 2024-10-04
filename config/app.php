@@ -123,4 +123,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'aliases' => \Illuminate\Support\Facades\Facade::defaultAliases()->merge([
+        'HttpStatus' => \Symfony\Component\HttpFoundation\Response::class,
+    ])->toArray(),
 ];
