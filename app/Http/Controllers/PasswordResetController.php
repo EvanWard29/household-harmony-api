@@ -24,7 +24,9 @@ class PasswordResetController
             $request->only('email')
         );
 
-        return response()->json(['message' => __($status)]);
+        return $status === Password::RESET_LINK_SENT
+            ? response()->json(['message' => __($status)])
+            : response()->json(['message' => __($status)], \HttpStatus::HTTP_FORBIDDEN);
     }
 
     /**
@@ -45,6 +47,8 @@ class PasswordResetController
             }
         );
 
-        return response()->json(['message' => __($status)]);
+        return $status === Password::PASSWORD_RESET
+            ? response()->json(['message' => __($status)])
+            : response()->json(['message' => [__($status)]], \HttpStatus::HTTP_FORBIDDEN);
     }
 }
