@@ -29,37 +29,35 @@ Route::post('/sanctum/token', function (Request $request) {
     ];
 });
 
-// Email Verification
-Route::prefix('email')
-    ->name('verification.')
-    ->controller(EmailVerificationController::class)
-    ->group(function () {
-        Route::post('verification-notification', 'send')
-            ->middleware(['auth:sanctum', 'throttle:6,1'])
-            ->name('send');
+Route::prefix('user')->group(function () {
+    // Email Verification
+    Route::prefix('email')
+        ->name('verification.')
+        ->controller(EmailVerificationController::class)
+        ->group(function () {
+            Route::post('verification-notification', 'send')
+                ->middleware(['auth:sanctum', 'throttle:6,1'])
+                ->name('send');
 
-        Route::get('verify/{id}/{hash}', 'verify')
-            ->middleware(['signed'])
-            ->name('verify');
-    });
+            Route::get('verify/{id}/{hash}', 'verify')
+                ->middleware(['signed'])
+                ->name('verify');
+        });
 
-// Password Reset
-Route::prefix('user/password')
-    ->name('password.')
-    ->controller(PasswordResetController::class)
-    ->middleware('guest')
-    ->group(function () {
-        Route::post('forgot', 'forgot')
-            ->name('email');
+    // Password Reset
+    Route::prefix('password')
+        ->name('password.')
+        ->controller(PasswordResetController::class)
+        ->middleware('guest')
+        ->group(function () {
+            Route::post('forgot', 'forgot')
+                ->name('email');
 
-        Route::post('reset', 'reset')
-            ->name('update');
-    });
+            Route::post('reset', 'reset')
+                ->name('update');
+        });
+});
 
 Route::apiSingleton('user', UserController::class)
     ->destroyable()
     ->middleware('auth:sanctum');
-
-Route::get('test', function () {
-    return url()->full();
-});
