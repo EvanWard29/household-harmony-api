@@ -6,6 +6,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\Requests\Auth\TokenRequest;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,11 +18,14 @@ class AuthController
      */
     public function register(RegistrationRequest $request): JsonResponse
     {
-        User::create([
+        $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => \Hash::make($request->input('password')),
         ]);
+
+        // Trigger registration event to dispatch email verification notification
+        event(new Registered($user));
 
         return response()->json(['message' => 'Registration successful.'], 201);
     }
