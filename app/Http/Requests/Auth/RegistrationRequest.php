@@ -11,10 +11,15 @@ class RegistrationRequest extends FormRequest{
     public function rules(): array
     {
         return [
-            'name' => [
+            'first_name' => [
                 'required',
                 'string',
                 'max:255'
+            ],
+            'last_name' => [
+                'required',
+                'string',
+                'max:255',
             ],
             'email' => [
                 'required',
