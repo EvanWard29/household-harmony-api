@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\Requests\Auth\TokenRequest;
+use App\Models\Household;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
@@ -18,12 +19,21 @@ class AuthController
      */
     public function register(RegistrationRequest $request): JsonResponse
     {
-        $user = User::create([
+        $user = User::make([
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
             'email' => $request->input('email'),
             'password' => \Hash::make($request->input('password')),
         ]);
+
+        // Create a new household
+        // TODO: Household should be retrieved if the user was invited
+        $household = Household::create(['name' => "The $user->last_name's"]);
+
+        // Associate user with a household
+        $user->household()->associate($household);
+
+        $user->save();
 
         // Trigger registration event to dispatch email verification notification
         event(new Registered($user));
