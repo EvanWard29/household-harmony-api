@@ -14,6 +14,7 @@ Route::prefix('auth')
         Route::post('register', 'register')->name('register');
         Route::post('logout', 'logout')->name('logout')->middleware('auth:sanctum');
         Route::post('token', 'token')->name('token');
+        Route::post('confirm-password', 'confirm')->name('confirm-password')->middleware('auth:sanctum');
     });
 
 Route::prefix('user')->group(function () {

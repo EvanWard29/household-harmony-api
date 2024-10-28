@@ -80,4 +80,17 @@ class AuthController
             \HttpStatus::HTTP_UNAUTHORIZED
         );
     }
+
+    /**
+     * Confirm the authenticated user's entered password is correct
+     */
+    public function confirm(Request $request): JsonResponse
+    {
+        $request->validate([
+            'password' => 'required|confirmed|current_password:sanctum'
+        ]);
+
+        return response()->json()
+            ->cookie('password_confirmation_timeout', config('auth.password_timeout'));
+    }
 }
