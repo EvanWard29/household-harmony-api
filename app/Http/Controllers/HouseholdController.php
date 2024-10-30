@@ -11,9 +11,9 @@ class HouseholdController
     /**
      * Retrieve the user's household
      */
-    public function show(Request $request): HouseholdResource
+    public function show(Household $household): HouseholdResource
     {
-        return new HouseholdResource($request->user()->household);
+        return new HouseholdResource($household);
     }
 
     /**

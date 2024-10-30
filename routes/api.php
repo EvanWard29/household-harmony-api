@@ -51,5 +51,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiSingleton('user', UserController::class)
         ->destroyable();
 
-    Route::apiSingleton('household', HouseholdController::class);
+    Route::prefix('household/{household}')->group(function () {
+        Route::controller(HouseholdController::class)->group(function () {
+            Route::get('', 'show')->can('view', 'household');
+            Route::put('', 'update')->can('update', 'household');
+        });
+    });
 });
