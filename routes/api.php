@@ -12,7 +12,7 @@ Route::prefix('auth')
     ->controller(AuthController::class)
     ->group(function () {
         Route::post('login', 'login')->name('login');
-        Route::post('register', 'register')->name('register');
+        Route::post('register/{inviteToken?}', 'register')->name('register');
         Route::post('logout', 'logout')->name('logout')->middleware('auth:sanctum');
         Route::post('token', 'token')->name('token');
         Route::post('confirm-password', 'confirm')->name('confirm-password')->middleware('auth:sanctum');
@@ -55,6 +55,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::controller(HouseholdController::class)->group(function () {
             Route::get('', 'show')->can('view', 'household');
             Route::put('', 'update')->can('update', 'household');
+
+            Route::post('invite', 'invite')->can('invite', 'household');
         });
     });
 });

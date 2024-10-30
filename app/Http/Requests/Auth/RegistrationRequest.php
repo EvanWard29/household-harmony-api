@@ -22,7 +22,7 @@ class RegistrationRequest extends FormRequest{
                 'max:255',
             ],
             'email' => [
-                'required',
+                Rule::requiredIf(is_null($this->route('inviteToken'))),
                 'string',
                 'email',
                 'max:255',
