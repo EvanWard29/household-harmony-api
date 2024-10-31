@@ -37,13 +37,9 @@ Route::prefix('user')->group(function () {
     Route::prefix('password')
         ->name('password.')
         ->controller(PasswordResetController::class)
-        ->middleware('guest')
         ->group(function () {
-            Route::post('forgot', 'forgot')
-                ->name('email');
-
-            Route::post('reset', 'reset')
-                ->name('update');
+            Route::post('forgot', 'forgot')->name('forgot');
+            Route::post('reset', 'reset')->name('reset');
         });
 });
 
