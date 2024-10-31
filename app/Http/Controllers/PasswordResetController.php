@@ -39,7 +39,7 @@ class PasswordResetController
             function (User $user, string $password) {
                 $user->forceFill([
                     'password' => Hash::make($password),
-                ])->setRememberToken(Str::random(60));
+                ]);
 
                 $user->save();
 
