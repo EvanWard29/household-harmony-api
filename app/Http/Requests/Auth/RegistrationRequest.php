@@ -12,12 +12,12 @@ class RegistrationRequest extends FormRequest{
     {
         return [
             'first_name' => [
-                'required',
+                Rule::requiredIf(is_null($this->route('inviteToken'))),
                 'string',
                 'max:255'
             ],
             'last_name' => [
-                'required',
+                Rule::requiredIf(is_null($this->route('inviteToken'))),
                 'string',
                 'max:255',
             ],

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\HouseholdResource;
-use App\Mail\HouseholdInviteMail;
 use App\Models\Household;
 use App\Models\HouseholdInvite;
 use App\Models\User;
+use App\Notifications\HouseholdInviteNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -42,7 +42,20 @@ class HouseholdController
     {
         $request->validate([
             'email' => ['required', 'email', Rule::unique(User::class)],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
         ]);
+
+        // Create a new pending user for the recipient
+        $recipient = User::make([
+            'email' => $request->input('email'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'is_active' => false,
+        ]);
+
+        $recipient->household()->associate($household);
+        $recipient->save();
 
         // Create a unique invite token
         do {
@@ -50,15 +63,17 @@ class HouseholdController
         } while (HouseholdInvite::where('token', $token)->exists());
 
         $invite = HouseholdInvite::make([
-            'email' => $request->input('email'),
             'token' => $token,
         ]);
 
         $invite->household()->associate($household);
+        $invite->sender()->associate($request->user());
+        $invite->recipient()->associate($recipient);
+
         $invite->save();
 
         // Send invite email
-        \Mail::to($invite->email)->queue(new HouseholdInviteMail($invite));
+        $recipient->notify(new HouseholdInviteNotification($invite));
 
         return response()->json();
     }

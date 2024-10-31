@@ -20,4 +20,20 @@ class HouseholdInvite extends Model
     {
         return $this->belongsTo(Household::class);
     }
+
+    /**
+     * The sender of the invite
+     */
+    public function sender(): BelongsTo
+    {
+        return $this->BelongsTo(User::class, 'sender_id');
+    }
+
+    /**
+     * The recipient of the invite
+     */
+    public function recipient(): BelongsTo
+    {
+        return $this->BelongsTo(User::class, 'recipient_id');
+    }
 }
