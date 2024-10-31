@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('invite', 'invite')
             ->can('invite', 'household')
+            ->middleware('verified')
             ->name('invite');
     });
 });
