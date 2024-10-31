@@ -44,6 +44,8 @@ class HouseholdController
             'email' => ['required', 'email', Rule::unique(User::class)],
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
+        ], [
+            'email.unique' => 'User is already in a household.',
         ]);
 
         // Create a new pending user for the recipient
