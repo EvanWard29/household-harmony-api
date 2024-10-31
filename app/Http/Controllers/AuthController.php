@@ -31,6 +31,9 @@ class AuthController
         $household = $inviteToken->household ?? Household::create(['name' => "The $user->last_name's"]);
         $user->household()->associate($household);
 
+        // Set the user as active
+        $user->is_active = true;
+
         $user->save();
 
         // Trigger registration event to dispatch email verification notification
