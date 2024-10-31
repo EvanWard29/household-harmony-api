@@ -30,13 +30,15 @@ class AuthController
                 'first_name' => $request->input('first_name'),
                 'last_name' => $request->input('last_name'),
                 'email' => $request->input('email'),
-                'password' => \Hash::make($request->input('password')),
             ]);
 
             // Create a new household for new users
             $household = Household::create(['name' => "The $user->last_name's"]);
             $user->household()->associate($household);
         }
+
+        // Set the user's password
+        $user->password = \Hash::make($request->input('password'));
 
         // Set the user as active
         $user->is_active = true;
