@@ -11,17 +11,17 @@ class UserController
     /**
      * Get the requesting {@see User}
      */
-    public function show(): User
+    public function show(User $user): User
     {
-        return request()->user();
+        return $user;
     }
 
     /**
      * Update the requesting {@see User}
      */
-    public function update(): User
+    public function update(User $user): User
     {
-        return request()->user();
+        return $user;
     }
 
     /**

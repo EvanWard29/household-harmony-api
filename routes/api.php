@@ -44,20 +44,35 @@ Route::prefix('user')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiSingleton('user', UserController::class)
-        ->destroyable();
+    // User routes
+    Route::prefix('user/{user}')
+        ->name('user.')
+        ->controller(UserController::class)
+        ->group(function () {
+            Route::apiSingleton('', UserController::class)
+                ->destroyable()
+                ->middleware([
+                    'show' => 'can:view,user',
+                    'update' => 'can:update,user',
+                    'destroy' => 'can:delete,user',
+                ]);
+        });
 
-    Route::prefix('household/{household}')->name('household.')->controller(HouseholdController::class)->group(function () {
-        Route::apiSingleton('', HouseholdController::class, [
-            'middleware' => [
-                'show' => 'can:view,household',
-                'update' => 'can:update,household',
-            ],
-        ]);
+    // Household routes
+    Route::prefix('household/{household}')
+        ->name('household.')
+        ->controller(HouseholdController::class)
+        ->group(function () {
+            Route::apiSingleton('', HouseholdController::class, [
+                'middleware' => [
+                    'show' => 'can:view,household',
+                    'update' => 'can:update,household',
+                ],
+            ]);
 
-        Route::post('invite', 'invite')
-            ->can('invite', 'household')
-            ->middleware('verified')
-            ->name('invite');
-    });
+            Route::post('invite', 'invite')
+                ->can('invite', 'household')
+                ->middleware('verified')
+                ->name('invite');
+        });
 });
