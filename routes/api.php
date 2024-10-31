@@ -51,12 +51,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiSingleton('user', UserController::class)
         ->destroyable();
 
-    Route::prefix('household/{household}')->group(function () {
-        Route::controller(HouseholdController::class)->group(function () {
-            Route::get('', 'show')->can('view', 'household');
-            Route::put('', 'update')->can('update', 'household');
+    Route::prefix('household/{household}')->name('household.')->controller(HouseholdController::class)->group(function () {
+        Route::apiSingleton('', HouseholdController::class, [
+            'middleware' => [
+                'show' => 'can:view,household',
+                'update' => 'can:update,household',
+            ],
+        ]);
 
-            Route::post('invite', 'invite')->can('invite', 'household');
-        });
+        Route::post('invite', 'invite')
+            ->can('invite', 'household')
+            ->name('invite');
     });
 });
