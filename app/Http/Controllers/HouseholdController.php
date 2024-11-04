@@ -38,7 +38,7 @@ class HouseholdController
     /**
      * Invite a user to the household
      */
-    public function invite(Request $request, Household $household): JsonResponse
+    public function invite(Request $request, Household $household)
     {
         $request->validate([
             'email' => ['required', 'email', Rule::unique(User::class)],
@@ -54,6 +54,7 @@ class HouseholdController
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
             'is_active' => false,
+            'type' => AccountType::Adult,
         ]);
 
         $recipient->household()->associate($household);
@@ -76,7 +77,5 @@ class HouseholdController
 
         // Send invite email
         $recipient->notify(new HouseholdInviteNotification($invite));
-
-        return response()->json();
     }
 }
