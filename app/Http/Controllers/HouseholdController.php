@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AccountType;
 use App\Http\Resources\HouseholdResource;
+use App\Http\Resources\UserResource;
 use App\Models\Household;
 use App\Models\HouseholdInvite;
 use App\Models\User;
@@ -93,5 +95,32 @@ class HouseholdController
 
         // Send invite email
         $recipient->notify(new HouseholdInviteNotification($invite));
+    }
+
+    /**
+     * Create a new child account
+     */
+    public function createChild(Request $request, Household $household): UserResource
+    {
+        $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', Rule::unique(User::class)],
+        ]);
+
+        // Create the account and add to the household
+        $child = User::make([
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'username' => $request->input('username'),
+            'type' => AccountType::Child,
+            'is_active' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $child->household()->associate($household);
+        $child->save();
+
+        return new UserResource($child);
     }
 }

@@ -76,6 +76,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('invite', 'invite')
                     ->middleware('verified')
                     ->name('invite');
+
+                Route::post('child', 'createChild')->name('create-child');
             });
         });
 });
