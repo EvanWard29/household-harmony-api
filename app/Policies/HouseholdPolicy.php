@@ -28,9 +28,9 @@ class HouseholdPolicy
     }
 
     /**
-     * Check if the user can invite new users to the requested household
+     * Check if a user can manage household members
      */
-    public function invite(User $user, Household $household): bool
+    public function manage(User $user, Household $household): bool
     {
         // TODO: Also check if user is `admin`
         return $user->can('view', $household);

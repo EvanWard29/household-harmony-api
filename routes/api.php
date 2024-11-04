@@ -70,9 +70,10 @@ Route::middleware('auth:sanctum')->group(function () {
                 ],
             ]);
 
-            Route::post('invite', 'invite')
-                ->can('invite', 'household')
-                ->middleware('verified')
-                ->name('invite');
+            Route::middleware('can:manage,household')->group(function () {
+                Route::post('invite', 'invite')
+                    ->middleware('verified')
+                    ->name('invite');
+            });
         });
 });
