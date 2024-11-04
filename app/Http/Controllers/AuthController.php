@@ -32,6 +32,14 @@ class AuthController
                 'email' => $request->input('email'),
             ]);
 
+            // Set the user's username
+            $user->username = \Str::studly($user->first_name.' '.$user->last_name);
+
+            // Add a random 4 digit integer to the username to ensure it is unique
+            while (User::where('username', $user->username)->exists()) {
+                $user->username .= rand(1000, 9999);
+            }
+
             // Create a new household for new users
             $household = Household::create(['name' => "The $user->last_name's"]);
             $user->household()->associate($household);
