@@ -36,6 +36,22 @@ class HouseholdController
     }
 
     /**
+     * Remove a user from the household
+     */
+    public function deleteUser(Request $request, Household $household, User $user)
+    {
+        // Users cannot delete themselves
+        if ($request->user() == $user) {
+            abort(\HttpStatus::HTTP_FORBIDDEN, 'Cannot remove yourself.');
+        }
+
+        // TODO: Notify the user to be deleted they have been removed
+
+        // Delete the user
+        $user->delete();
+    }
+
+    /**
      * Invite a user to the household
      */
     public function invite(Request $request, Household $household)

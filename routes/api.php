@@ -71,6 +71,8 @@ Route::middleware('auth:sanctum')->group(function () {
             ]);
 
             Route::middleware('can:manage,household')->group(function () {
+                Route::delete('{user}', 'deleteUser')->name('delete-user');
+
                 Route::post('invite', 'invite')
                     ->middleware('verified')
                     ->name('invite');
