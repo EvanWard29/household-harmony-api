@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,17 +13,19 @@ class UserController
     /**
      * Get the requesting {@see User}
      */
-    public function show(User $user): User
+    public function show(User $user): UserResource
     {
-        return $user;
+        return new UserResource($user);
     }
 
     /**
      * Update the requesting {@see User}
      */
-    public function update(User $user): User
+    public function update(UpdateUserRequest $request, User $user): UserResource
     {
-        return $user;
+        $user->update($request->input());
+
+        return new UserResource($user);
     }
 
     /**

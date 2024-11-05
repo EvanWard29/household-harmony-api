@@ -15,6 +15,11 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * Defines a valid username
+     */
+    public const USERNAME_REGEX = '/(?!.*[\.\-\_]{2,})^[a-zA-Z0-9\.\-\_]{3,24}$/';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

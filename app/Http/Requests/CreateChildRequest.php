@@ -9,8 +9,6 @@ use Illuminate\Validation\Rules\Password;
 
 class CreateChildRequest extends FormRequest
 {
-    private const USERNAME_REGEX = '/(?!.*[\.\-\_]{2,})^[a-zA-Z0-9\.\-\_]{3,24}$/';
-
     public function rules(): array
     {
         return [
@@ -29,7 +27,7 @@ class CreateChildRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::unique(User::class),
-                'regex:'.self::USERNAME_REGEX,
+                'regex:'.User::USERNAME_REGEX,
             ],
             'password' => [
                 'required',
