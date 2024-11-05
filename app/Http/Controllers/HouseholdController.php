@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccountType;
+use App\Http\Requests\CreateChildRequest;
+use App\Http\Requests\InviteRequest;
 use App\Http\Resources\HouseholdResource;
 use App\Http\Resources\UserResource;
 use App\Models\Household;
@@ -56,21 +58,14 @@ class HouseholdController
     /**
      * Invite a user to the household
      */
-    public function invite(Request $request, Household $household)
+    public function invite(InviteRequest $request, Household $household)
     {
-        $request->validate([
-            'email' => ['required', 'email', Rule::unique(User::class)],
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-        ], [
-            'email.unique' => 'User is already in a household.',
-        ]);
-
         // Create a new pending user for the recipient
         $recipient = User::make([
             'email' => $request->input('email'),
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
+
             'is_active' => false,
             'type' => AccountType::Adult,
         ]);
@@ -100,19 +95,14 @@ class HouseholdController
     /**
      * Create a new child account
      */
-    public function createChild(Request $request, Household $household): UserResource
+    public function createChild(CreateChildRequest $request, Household $household): UserResource
     {
-        $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', Rule::unique(User::class)],
-        ]);
-
         // Create the account and add to the household
         $child = User::make([
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
             'username' => $request->input('username'),
+
             'type' => AccountType::Child,
             'is_active' => true,
             'email_verified_at' => now(),
