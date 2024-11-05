@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Household;
 use App\Models\HouseholdInvite;
 use App\Models\User;
+use App\Notifications\DeletedUserNotification;
 use App\Notifications\HouseholdInviteNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,7 +50,10 @@ class HouseholdController
             abort(\HttpStatus::HTTP_FORBIDDEN, 'Cannot remove yourself.');
         }
 
-        // TODO: Notify the user to be deleted they have been removed
+        // Notify adult users that their account has been deleted
+        if ($user->isAdult()) {
+            $user->notify(new DeletedUserNotification($request->user()));
+        }
 
         // Delete the user
         $user->delete();
