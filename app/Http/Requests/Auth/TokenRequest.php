@@ -8,9 +8,21 @@ class TokenRequest extends FormRequest{
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
-            'password' => 'required',
-            'device_name' => 'required',
+            'email' => [
+                'required_without:username',
+                'missing_with:username',
+                'email',
+            ],
+            'username' => [
+                'required_without:email',
+                'missing_with:email',
+                'string',
+            ],
+            'password' => [
+                'required',
+                'string',
+            ],
+            'device_name' => ['required', 'string'],
         ];
     }
 

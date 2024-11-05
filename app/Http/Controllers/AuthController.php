@@ -68,7 +68,7 @@ class AuthController
     public function login(LoginRequest $request): JsonResponse
     {
         // Attempt to authenticate
-        if (Auth::once($request->only('email', 'password'))) {
+        if (Auth::once($request->only('email', 'username', 'password'))) {
             return response()->json(['message' => 'Login success!']);
         }
 
@@ -96,12 +96,10 @@ class AuthController
      */
     public function token(TokenRequest $request): JsonResponse
     {
-        $user = User::firstWhere('email', $request->input('email'));
-
         // Attempt to authenticate and return a new token
-        if (Auth::once($request->only('email', 'password'))) {
+        if (Auth::once($request->only('email', 'username', 'password'))) {
             return response()->json([
-                'token' => $user->createToken(
+                'token' => Auth::user()->createToken(
                     $request->input('device_name')
                 )->plainTextToken
             ]);
