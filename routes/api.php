@@ -18,9 +18,9 @@ Route::prefix('auth')
         Route::post('confirm-password', 'confirm')->name('confirm-password')->middleware('auth:sanctum');
     });
 
-Route::prefix('user')->group(function () {
+Route::prefix('user')->name('user.')->group(function () {
     // Email Verification
-    Route::prefix('email')
+    Route::prefix('{user}/email')
         ->name('verification.')
         ->controller(EmailVerificationController::class)
         ->group(function () {
@@ -28,7 +28,7 @@ Route::prefix('user')->group(function () {
                 ->middleware(['auth:sanctum', 'throttle:6,1'])
                 ->name('send');
 
-            Route::get('verify/{id}/{hash}', 'verify')
+            Route::get('verify/{hash}', 'verify')
                 ->middleware(['signed'])
                 ->name('verify');
         });

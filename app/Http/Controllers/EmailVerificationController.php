@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\EmailVerificationRequest;
+use App\Models\User;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,9 +27,13 @@ class EmailVerificationController
     /**
      * Verify the user's email once they've clicked on the link
      */
-    public function verify(EmailVerificationRequest $request): RedirectResponse
+    public function verify(Request $request, User $user): RedirectResponse
     {
-        $request->fulfill();
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+
+            event(new Verified($user));
+        }
 
         return redirect('/');
     }
