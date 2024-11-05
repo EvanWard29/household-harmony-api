@@ -60,6 +60,7 @@ class HouseholdInviteController
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
             'username' => $request->input('username'),
+            'password' => \Hash::make($request->input('password')),
 
             'type' => AccountType::Child,
             'is_active' => true,

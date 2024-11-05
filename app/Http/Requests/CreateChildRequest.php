@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class CreateChildRequest extends FormRequest
 {
@@ -29,6 +30,11 @@ class CreateChildRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class),
                 'regex:'.self::USERNAME_REGEX,
+            ],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::default(),
             ],
         ];
     }
