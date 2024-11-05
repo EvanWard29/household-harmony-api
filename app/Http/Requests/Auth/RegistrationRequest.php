@@ -30,9 +30,8 @@ class RegistrationRequest extends FormRequest{
             ],
             'password' => [
                 'required',
-                'string',
-                Password::default(),
                 'confirmed',
+                Password::default(),
             ],
         ];
     }
