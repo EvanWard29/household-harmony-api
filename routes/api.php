@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\HouseholdController;
+use App\Http\Controllers\HouseholdInviteController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -61,23 +62,28 @@ Route::middleware('auth:sanctum')->group(function () {
     // Household routes
     Route::prefix('household/{household}')
         ->name('household.')
-        ->controller(HouseholdController::class)
         ->group(function () {
-            Route::apiSingleton('', HouseholdController::class, [
-                'middleware' => [
-                    'show' => 'can:view,household',
-                    'update' => 'can:update,household',
-                ],
-            ]);
+            Route::controller(HouseholdController::class)->group(function () {
+                Route::apiSingleton('', HouseholdController::class, [
+                    'middleware' => [
+                        'show' => 'can:view,household',
+                        'update' => 'can:update,household',
+                    ],
+                ]);
 
-            Route::middleware('can:manage,household')->group(function () {
-                Route::delete('{user}', 'deleteUser')->name('delete-user');
-
-                Route::post('invite', 'invite')
-                    ->middleware('verified')
-                    ->name('invite');
-
-                Route::post('child', 'createChild')->name('create-child');
+                Route::delete('{user}', 'deleteUser')
+                    ->can('manage', 'household')
+                    ->name('delete-user');
             });
+
+            Route::controller(HouseholdInviteController::class)
+                ->middleware('can:manage,household')
+                ->group(function () {
+                    Route::post('invite', 'invite')
+                        ->middleware('verified')
+                        ->name('invite');
+
+                    Route::post('child', 'createChild')->name('create-child');
+                });
         });
 });
