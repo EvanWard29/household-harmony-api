@@ -28,7 +28,7 @@ class HouseholdController
     /**
      * Update a user's household
      */
-    public function update(Request $request, Household $household)
+    public function update(Request $request, Household $household): HouseholdResource
     {
         $data = $request->validate([
             'name' => ['required'],
@@ -36,7 +36,7 @@ class HouseholdController
 
         $household->update($data);
 
-        return $household;
+        return new HouseholdResource($household);
     }
 
     /**
