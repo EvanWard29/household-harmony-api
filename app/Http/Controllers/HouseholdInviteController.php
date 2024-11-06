@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RolesEnum;
 use App\Http\Requests\CreateChildRequest;
 use App\Http\Requests\InviteRequest;
 use App\Http\Resources\UserResource;
@@ -66,6 +67,9 @@ class HouseholdInviteController
 
         $child->household()->associate($household);
         $child->save();
+
+        // Child accounts are automatically assigned the `child` role
+        $child->assignRole(RolesEnum::CHILD);
 
         return new UserResource($child);
     }
