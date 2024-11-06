@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /**
      * Defines a valid username
@@ -75,5 +76,18 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isChild(): bool
     {
         return $this->type === AccountType::Child;
+    }
+
+    /**
+     * The `guard_name` to use for roles/permissions
+     */
+    public function guardName(): string
+    {
+        return config('auth.defaults.guard');
+    }
+
+    protected function getDefaultGuardName(): string
+    {
+        return config('auth.defaults.guard');
     }
 }
