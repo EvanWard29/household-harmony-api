@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\RolesEnum;
 use App\Models\Household;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -23,8 +24,7 @@ class HouseholdPolicy
      */
     public function update(User $user, Household $household): bool
     {
-        // TODO: Also check if user is `admin`
-        return $user->can('view', $household);
+        return $user->can('view', $household) && $user->hasRole(RolesEnum::ADMIN);
     }
 
     /**
@@ -32,7 +32,6 @@ class HouseholdPolicy
      */
     public function manage(User $user, Household $household): bool
     {
-        // TODO: Also check if user is `admin`
-        return $user->can('view', $household);
+        return $user->can('view', $household) && $user->hasRole(RolesEnum::ADMIN);
     }
 }
