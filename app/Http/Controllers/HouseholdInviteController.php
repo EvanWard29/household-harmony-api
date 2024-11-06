@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AccountType;
 use App\Http\Requests\CreateChildRequest;
 use App\Http\Requests\InviteRequest;
 use App\Http\Resources\UserResource;
@@ -25,7 +24,6 @@ class HouseholdInviteController
             'last_name' => $request->input('last_name'),
 
             'is_active' => false,
-            'type' => AccountType::Adult,
         ]);
 
         $recipient->household()->associate($household);
@@ -62,7 +60,6 @@ class HouseholdInviteController
             'username' => $request->input('username'),
             'password' => \Hash::make($request->input('password')),
 
-            'type' => AccountType::Child,
             'is_active' => true,
             'email_verified_at' => now(),
         ]);

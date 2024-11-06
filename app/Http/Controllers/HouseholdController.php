@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AccountType;
 use App\Http\Requests\CreateChildRequest;
 use App\Http\Requests\InviteRequest;
 use App\Http\Resources\HouseholdResource;
@@ -51,7 +50,7 @@ class HouseholdController
         }
 
         // Notify adult users that their account has been deleted
-        if ($user->isAdult()) {
+        if ($user->email) {
             $user->notify(new DeletedUserNotification($request->user()));
         }
 

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\AccountType;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,7 +49,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'type' => AccountType::class,
         ];
     }
 
@@ -60,22 +58,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function household(): BelongsTo
     {
         return $this->belongsTo(Household::class);
-    }
-
-    /**
-     * Check if the user is an adult account
-     */
-    public function isAdult(): bool
-    {
-        return $this->type === AccountType::Adult;
-    }
-
-    /**
-     * Check if the user is a child account
-     */
-    public function isChild(): bool
-    {
-        return $this->type === AccountType::Child;
     }
 
     /**

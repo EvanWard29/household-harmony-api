@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\AccountType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +19,6 @@ return new class extends Migration
             $table->string('username')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
-            $table->enum('type', AccountType::values());
             $table->boolean('is_active');
             $table->timestamps();
         });
