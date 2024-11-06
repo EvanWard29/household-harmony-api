@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\Requests\Auth\TokenRequest;
+use App\Http\Resources\UserResource;
 use App\Models\Household;
 use App\Models\HouseholdInvite;
 use App\Models\User;
@@ -18,7 +19,7 @@ class AuthController
     /**
      * Register a new user
      */
-    public function register(RegistrationRequest $request, ?HouseholdInvite $inviteToken = null): JsonResponse
+    public function register(RegistrationRequest $request, ?HouseholdInvite $inviteToken = null): UserResource
     {
         if (! is_null($inviteToken)) {
             $user = $inviteToken->recipient;
@@ -59,7 +60,7 @@ class AuthController
         // Delete the household invite if set
         $inviteToken?->delete();
 
-        return response()->json(['message' => 'Registration successful.'], \HttpStatus::HTTP_CREATED);
+        return new UserResource($user);
     }
 
     /**
