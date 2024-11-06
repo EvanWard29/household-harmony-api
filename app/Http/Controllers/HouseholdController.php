@@ -54,6 +54,9 @@ class HouseholdController
             $user->notify(new DeletedUserNotification($request->user()));
         }
 
+        // Delete the user's tokens
+        $user->tokens()->delete();
+
         // Delete the user
         $user->delete();
     }
