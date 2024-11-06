@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             'updated_at' => $this->updated_at,
 
             'household_id' => $this->household_id,
+            'roles' => $this->roles->pluck('name'),
         ];
     }
 }

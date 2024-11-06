@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RolesEnum;
 use App\Http\Requests\CreateChildRequest;
 use App\Http\Requests\InviteRequest;
 use App\Http\Resources\HouseholdResource;
@@ -59,5 +60,20 @@ class HouseholdController
 
         // Delete the user
         $user->delete();
+    }
+
+    /**
+     * Assign a user some roles/permissions
+     */
+    public function assignRoles(Request $request, Household $household, User $user): UserResource
+    {
+        $request->validate([
+            'roles' => ['required', 'array'],
+            'roles.*' => [Rule::enum(RolesEnum::class)],
+        ]);
+
+        $user->syncRoles($request->input('roles'));
+
+        return new UserResource($user);
     }
 }
