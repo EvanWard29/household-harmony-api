@@ -50,13 +50,13 @@ Route::middleware('auth:api')->group(function () {
         ->name('user.')
         ->controller(UserController::class)
         ->group(function () {
-            Route::apiSingleton('', UserController::class)
-                ->destroyable()
-                ->middleware([
-                    'show' => 'can:view,user',
-                    'update' => 'can:update,user',
-                    'destroy' => 'can:delete,user',
-                ]);
+            Route::get('', 'show')
+                ->can('view', 'user')
+                ->name('show');
+
+            Route::match(['put', 'patch'], '', 'update')
+                ->can('update', 'user')
+                ->name('update');
         });
 
     // Household routes
@@ -64,16 +64,14 @@ Route::middleware('auth:api')->group(function () {
         ->name('household.')
         ->group(function () {
             Route::controller(HouseholdController::class)->group(function () {
-                Route::apiSingleton('', HouseholdController::class, [
-                    'middleware' => [
-                        'show' => 'can:view,household',
-                        'update' => 'can:update,household',
-                    ],
-                ]);
+                Route::get('', 'show')
+                    ->can('view', 'household')
+                    ->name('show');
 
-                Route::delete('{user}', 'deleteUser')
-                    ->can('manage', 'household')
-                    ->name('delete-user');
+                Route::middleware('can:manage,household')->group(function () {
+                    Route::match(['put', 'patch'], '', 'update')->name('update');
+                    Route::delete('{user}', 'deleteUser')->name('delete-user');
+                });
             });
 
             Route::controller(HouseholdInviteController::class)
