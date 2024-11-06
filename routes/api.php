@@ -14,9 +14,9 @@ Route::prefix('auth')
     ->group(function () {
         Route::post('login', 'login')->name('login');
         Route::post('register/{inviteToken?}', 'register')->name('register');
-        Route::post('logout', 'logout')->name('logout')->middleware('auth:sanctum');
+        Route::post('logout', 'logout')->name('logout')->middleware('auth:api');
         Route::post('token', 'token')->name('token');
-        Route::post('confirm-password', 'confirm')->name('confirm-password')->middleware('auth:sanctum');
+        Route::post('confirm-password', 'confirm')->name('confirm-password')->middleware('auth:api');
     });
 
 Route::prefix('user')->name('user.')->group(function () {
@@ -26,7 +26,7 @@ Route::prefix('user')->name('user.')->group(function () {
         ->controller(EmailVerificationController::class)
         ->group(function () {
             Route::post('verification-notification', 'send')
-                ->middleware(['auth:sanctum', 'throttle:6,1'])
+                ->middleware(['auth:api', 'throttle:6,1'])
                 ->name('send');
 
             Route::get('verify/{hash}', 'verify')
@@ -44,7 +44,7 @@ Route::prefix('user')->name('user.')->group(function () {
         });
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
     // User routes
     Route::prefix('user/{user}')
         ->name('user.')

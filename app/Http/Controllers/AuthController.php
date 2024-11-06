@@ -65,17 +65,17 @@ class AuthController
     /**
      * Attempt to log in
      */
-    public function login(LoginRequest $request): JsonResponse
+    public function login(LoginRequest $request)
     {
-        // Attempt to authenticate
-        if (Auth::once($request->only('email', 'username', 'password'))) {
-            return response()->json(['message' => 'Login success!']);
+        if ($request->filled('username')) {
+            $user = User::firstWhere('username', $request->input('username'));
+        } else {
+            $user = User::firstWhere('email', $request->input('email'));
         }
 
-        return response()->json(
-            ['message' => 'The provided credentials do not match our records.'],
-            \HttpStatus::HTTP_UNAUTHORIZED
-        );
+        if (! $user || ! \Hash::check($request->input('password'), $user->password)) {
+            abort(\HttpStatus::HTTP_UNAUTHORIZED, 'The provided credentials are incorrect.');
+        }
     }
 
     /**
@@ -96,31 +96,31 @@ class AuthController
      */
     public function token(TokenRequest $request): JsonResponse
     {
-        // Attempt to authenticate and return a new token
-        if (Auth::once($request->only('email', 'username', 'password'))) {
-            return response()->json([
-                'token' => Auth::user()->createToken(
-                    $request->input('device_name')
-                )->plainTextToken
-            ]);
+        if ($request->filled('username')) {
+            $user = User::firstWhere('username', $request->input('username'));
+        } else {
+            $user = User::firstWhere('email', $request->input('email'));
         }
 
-        return response()->json(
-            ['message' => 'The provided credentials do not match our records.'],
-            \HttpStatus::HTTP_UNAUTHORIZED
-        );
+        if (! $user || ! \Hash::check($request->input('password'), $user->password)) {
+            abort(\HttpStatus::HTTP_UNAUTHORIZED, 'The provided credentials are incorrect.');
+        }
+
+        $token = $user->createToken($request->input('device_name'))->plainTextToken;
+
+        return response()->json(['token' => $token]);
     }
 
     /**
      * Confirm the authenticated user's entered password is correct
      */
-    public function confirm(Request $request): JsonResponse
+    public function confirm(Request $request)
     {
         $request->validate([
-            'password' => 'required|confirmed|current_password:sanctum'
+            'password' => 'required|confirmed|current_password:api'
         ]);
 
-        return response()->json()
+        return response('')
             ->cookie('password_confirmation_timeout', config('auth.password_timeout'));
     }
 }
