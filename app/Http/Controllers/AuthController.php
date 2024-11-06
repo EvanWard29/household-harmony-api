@@ -36,6 +36,9 @@ class AuthController
             // Create a new household for new users
             $household = Household::create(['name' => "The $user->last_name's"]);
             $user->household()->associate($household);
+
+            // Assign new users the `admin` role by default
+            $user->assignRole('admin');
         }
 
         // Set the user's password
