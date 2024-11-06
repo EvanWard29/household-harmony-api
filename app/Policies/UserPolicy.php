@@ -18,10 +18,4 @@ class UserPolicy
     {
         return $this->view($authenticatedUser, $user);
     }
-
-    public function delete(User $authenticatedUser, User $user): bool
-    {
-        return $this->view($authenticatedUser, $user);
-    }
-
 }
