@@ -57,6 +57,11 @@ class AuthController
 
         $user->save();
 
+        // Set newly registered users as the owner of new households
+        if (! $inviteToken && isset($household)) {
+            $household->owner()->associate($user)->save();
+        }
+
         // Trigger registration event to dispatch email verification notification
         event(new Registered($user));
 

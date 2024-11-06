@@ -13,6 +13,7 @@ class HouseholdResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'owner_id' => $this->owner_id,
             'name' => $this->name,
             'users' => UserResource::collection($this->users),
         ];
