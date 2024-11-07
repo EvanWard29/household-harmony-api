@@ -31,11 +31,27 @@ class HouseholdController
      */
     public function update(Request $request, Household $household): HouseholdResource
     {
-        $data = $request->validate([
-            'name' => ['required'],
+        $request->validate([
+            'name' => ['string'],
+            'owner_id' => [
+                'int',
+                Rule::exists(User::class, 'id')
+                    ->where('household_id', $household->id),
+            ],
         ]);
 
-        $household->update($data);
+        if (
+            $request->filled('owner_id')
+            && ! User::find($request->input('owner_id'))->hasRole(RolesEnum::ADMIN)
+        ) {
+            abort(
+                \HttpStatus::HTTP_FORBIDDEN,
+                'The selected user is not an admin. '
+                    .'Please assign them the role of Admin first if you wish to continue.'
+            );
+        }
+
+        $household->update($request->input());
 
         return new HouseholdResource($household);
     }
