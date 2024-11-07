@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Household;
 use App\Models\HouseholdInvite;
 use App\Models\User;
+use Carbon\CarbonInterval;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -128,7 +129,20 @@ class AuthController
             'password' => 'required|confirmed|current_password:api',
         ]);
 
+        // Generate a short-lived token to use for password confirmation and cache it
+        $token = cache()->remember(
+            "password-confirmation:user:{$request->user()->id}",
+            config('auth.password_timeout'),
+            function () {
+                return \Str::random();
+            }
+        );
+
         return response('')
-            ->cookie('password_confirmation_timeout', config('auth.password_timeout'));
+            ->cookie(
+                'password_confirmation',
+                \Crypt::encryptString($token),
+                CarbonInterval::seconds(config('auth.password_timeout'))->totalMinutes
+            );
     }
 }
