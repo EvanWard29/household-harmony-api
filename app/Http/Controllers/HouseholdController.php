@@ -61,9 +61,20 @@ class HouseholdController
      */
     public function deleteUser(Request $request, Household $household, User $user)
     {
-        // Users cannot delete themselves
-        if ($request->user() == $user) {
-            abort(\HttpStatus::HTTP_FORBIDDEN, 'Cannot remove yourself.');
+        // Users cannot delete their account if they are the owner of the household
+        if ($request->user()->id === $user->id && $household->owner_id === $user->id) {
+            abort(
+                \HttpStatus::HTTP_FORBIDDEN,
+                'Cannot delete your account when you are the owner of the household. '
+                    .'Please transfer ownership to another Admin if you wish to continue.'
+            );
+        }
+
+        if ($user->hasRole(RolesEnum::ADMIN)) {
+            abort(
+                \HttpStatus::HTTP_FORBIDDEN,
+                'Cannot delete the account of another Admin.'
+            );
         }
 
         // Notify adult users that their account has been deleted
