@@ -7,14 +7,15 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
-class RegistrationRequest extends FormRequest{
+class RegistrationRequest extends FormRequest
+{
     public function rules(): array
     {
         return [
             'first_name' => [
                 Rule::requiredIf(is_null($this->route('inviteToken'))),
                 'string',
-                'max:255'
+                'max:255',
             ],
             'last_name' => [
                 Rule::requiredIf(is_null($this->route('inviteToken'))),

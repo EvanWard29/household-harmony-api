@@ -12,7 +12,6 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController
 {
@@ -126,7 +125,7 @@ class AuthController
     public function confirm(Request $request)
     {
         $request->validate([
-            'password' => 'required|confirmed|current_password:api'
+            'password' => 'required|confirmed|current_password:api',
         ]);
 
         return response('')

@@ -10,7 +10,9 @@ class HouseholdInvite extends Model
     protected $fillable = ['email', 'token'];
 
     protected $primaryKey = 'token';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     /**

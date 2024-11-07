@@ -3,16 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enums\RolesEnum;
-use App\Http\Requests\CreateChildRequest;
-use App\Http\Requests\InviteRequest;
 use App\Http\Resources\HouseholdResource;
 use App\Http\Resources\UserResource;
 use App\Models\Household;
-use App\Models\HouseholdInvite;
 use App\Models\User;
 use App\Notifications\DeletedUserNotification;
-use App\Notifications\HouseholdInviteNotification;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
