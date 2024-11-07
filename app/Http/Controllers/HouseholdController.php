@@ -54,7 +54,7 @@ class HouseholdController
     /**
      * Remove a user from the household
      */
-    public function deleteUser(Request $request, Household $household, User $user)
+    public function deleteUser(Request $request, Household $household, User $user): HouseholdResource
     {
         // Users cannot delete their account if they are the owner of the household
         if ($request->user()->id === $user->id && $household->owner_id === $user->id) {
@@ -82,6 +82,8 @@ class HouseholdController
 
         // Delete the user
         $user->delete();
+
+        return new HouseholdResource($household);
     }
 
     /**

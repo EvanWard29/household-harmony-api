@@ -70,7 +70,7 @@ Route::middleware('auth:api')->group(function () {
 
                 Route::middleware('can:manage,household')->group(function () {
                     Route::match(['put', 'patch'], '', 'update')->name('update');
-                    Route::delete('{user}', 'deleteUser')->name('delete-user');
+                    Route::delete('{user}', 'deleteUser')->middleware('password.confirm')->name('delete-user');
                     Route::post('{user}/roles', 'assignRoles')->name('assign-roles');
                 });
             });
