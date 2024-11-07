@@ -4,23 +4,29 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
+
+    /**
+     * Defines a valid username
+     */
+    public const USERNAME_REGEX = '/(?!.*[\.\-\_]{2,})^[a-zA-Z0-9\.\-\_]{3,24}$/';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
+    protected $guarded = [
+        'id',
+        'household_id',
     ];
 
     /**
@@ -44,5 +50,26 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * The household this user belongs to
+     */
+    public function household(): BelongsTo
+    {
+        return $this->belongsTo(Household::class);
+    }
+
+    /**
+     * The `guard_name` to use for roles/permissions
+     */
+    public function guardName(): string
+    {
+        return config('auth.defaults.guard');
+    }
+
+    protected function getDefaultGuardName(): string
+    {
+        return config('auth.defaults.guard');
     }
 }

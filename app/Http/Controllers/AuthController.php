@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\Requests\Auth\TokenRequest;
+use App\Http\Resources\UserResource;
+use App\Models\Household;
+use App\Models\HouseholdInvite;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
@@ -16,34 +19,72 @@ class AuthController
     /**
      * Register a new user
      */
-    public function register(RegistrationRequest $request): JsonResponse
+    public function register(RegistrationRequest $request, ?HouseholdInvite $inviteToken = null): UserResource
     {
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => \Hash::make($request->input('password')),
-        ]);
+        if (! is_null($inviteToken)) {
+            $user = $inviteToken->recipient;
+
+            // Mark the invitee's email as verified as they were invited by email
+            $user->email_verified_at = now();
+        } else {
+            $user = User::make([
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+                'email' => $request->input('email'),
+            ]);
+
+            // Create a new household for new users
+            $household = Household::create(['name' => "The $user->last_name's"]);
+            $user->household()->associate($household);
+
+            // Assign new users the `admin` role by default
+            $user->assignRole('admin');
+        }
+
+        // Set the user's password
+        $user->password = \Hash::make($request->input('password'));
+
+        // Set the user's username
+        $user->username = \Str::studly($user->first_name.' '.$user->last_name);
+
+        // Add a random 4 digit integer to the username to ensure it is unique
+        while (User::where('username', $user->username)->exists()) {
+            $user->username .= rand(1000, 9999);
+        }
+
+        // Set the user as active
+        $user->is_active = true;
+
+        $user->save();
+
+        // Set newly registered users as the owner of new households
+        if (! $inviteToken && isset($household)) {
+            $household->owner()->associate($user)->save();
+        }
 
         // Trigger registration event to dispatch email verification notification
         event(new Registered($user));
 
-        return response()->json(['message' => 'Registration successful.'], 201);
+        // Delete the household invite if set
+        $inviteToken?->delete();
+
+        return new UserResource($user);
     }
 
     /**
      * Attempt to log in
      */
-    public function login(LoginRequest $request): JsonResponse
+    public function login(LoginRequest $request)
     {
-        // Attempt to authenticate
-        if (Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Login success!']);
+        if ($request->filled('username')) {
+            $user = User::firstWhere('username', $request->input('username'));
+        } else {
+            $user = User::firstWhere('email', $request->input('email'));
         }
 
-        return response()->json(
-            ['message' => 'The provided credentials do not match our records.'],
-            \HttpStatus::HTTP_UNAUTHORIZED
-        );
+        if (! $user || ! \Hash::check($request->input('password'), $user->password)) {
+            abort(\HttpStatus::HTTP_UNAUTHORIZED, 'The provided credentials are incorrect.');
+        }
     }
 
     /**
@@ -64,33 +105,31 @@ class AuthController
      */
     public function token(TokenRequest $request): JsonResponse
     {
-        $user = User::firstWhere('email', $request->input('email'));
-
-        // Attempt to authenticate and return a new token
-        if (Auth::attempt($request->only('email', 'password'))) {
-            return response()->json([
-                'token' => $user->createToken(
-                    $request->input('device_name')
-                )->plainTextToken
-            ]);
+        if ($request->filled('username')) {
+            $user = User::firstWhere('username', $request->input('username'));
+        } else {
+            $user = User::firstWhere('email', $request->input('email'));
         }
 
-        return response()->json(
-            ['message' => 'The provided credentials do not match our records.'],
-            \HttpStatus::HTTP_UNAUTHORIZED
-        );
+        if (! $user || ! \Hash::check($request->input('password'), $user->password)) {
+            abort(\HttpStatus::HTTP_UNAUTHORIZED, 'The provided credentials are incorrect.');
+        }
+
+        $token = $user->createToken($request->input('device_name'))->plainTextToken;
+
+        return response()->json(['token' => $token]);
     }
 
     /**
      * Confirm the authenticated user's entered password is correct
      */
-    public function confirm(Request $request): JsonResponse
+    public function confirm(Request $request)
     {
         $request->validate([
-            'password' => 'required|confirmed|current_password:sanctum'
+            'password' => 'required|confirmed|current_password:api'
         ]);
 
-        return response()->json()
+        return response('')
             ->cookie('password_confirmation_timeout', config('auth.password_timeout'));
     }
 }

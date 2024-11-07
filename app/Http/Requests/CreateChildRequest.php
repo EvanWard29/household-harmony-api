@@ -1,32 +1,33 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
-class RegistrationRequest extends FormRequest{
+class CreateChildRequest extends FormRequest
+{
     public function rules(): array
     {
         return [
             'first_name' => [
-                Rule::requiredIf(is_null($this->route('inviteToken'))),
+                'required',
                 'string',
-                'max:255'
+                'max:255',
             ],
             'last_name' => [
-                Rule::requiredIf(is_null($this->route('inviteToken'))),
+                'required',
                 'string',
                 'max:255',
             ],
-            'email' => [
-                Rule::requiredIf(is_null($this->route('inviteToken'))),
+            'username' => [
+                'required',
                 'string',
-                'email',
                 'max:255',
                 Rule::unique(User::class),
+                'regex:'.User::USERNAME_REGEX,
             ],
             'password' => [
                 'required',
@@ -34,10 +35,5 @@ class RegistrationRequest extends FormRequest{
                 Password::default(),
             ],
         ];
-    }
-
-    public function authorize(): bool
-    {
-        return is_null($this->user());
     }
 }

@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
     ],
 
     /*
@@ -111,5 +115,18 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Email Verification Expire
+    |--------------------------------------------------------------------------
+    |
+    | Here you may define the number of minutes before a verification email
+    | expires.
+    |
+    */
+    'verification' => [
+        'expire' => 60,
+    ],
 
 ];

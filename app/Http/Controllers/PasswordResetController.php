@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PasswordResetRequest;
+use App\Http\Requests\Auth\PasswordResetRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
@@ -39,7 +39,7 @@ class PasswordResetController
             function (User $user, string $password) {
                 $user->forceFill([
                     'password' => Hash::make($password),
-                ])->setRememberToken(Str::random(60));
+                ]);
 
                 $user->save();
 
