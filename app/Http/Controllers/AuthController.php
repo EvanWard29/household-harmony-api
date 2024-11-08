@@ -117,7 +117,7 @@ class AuthController
 
         $token = $user->createToken($request->input('device_name'))->plainTextToken;
 
-        return response()->json(['token' => $token]);
+        return response()->json(['token' => $token], \HttpStatus::HTTP_CREATED);
     }
 
     /**
