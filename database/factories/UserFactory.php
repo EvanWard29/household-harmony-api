@@ -54,6 +54,17 @@ class UserFactory extends Factory
         return $this->afterCreating(fn (User $user) => $user->assignRole(RolesEnum::ADMIN));
     }
 
+    /**
+     * Create a pending user
+     */
+    public function pending(): static
+    {
+        return $this->unverified()->state(fn () => [
+            'is_active' => false,
+            'password' => null,
+        ]);
+    }
+
     public function configure(): static
     {
         return $this->afterCreating(function (User $user) {
