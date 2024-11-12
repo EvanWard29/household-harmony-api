@@ -6,6 +6,7 @@ use App\Enums\RolesEnum;
 use App\Http\Middleware\PasswordConfirmationMiddleware;
 use App\Models\Household;
 use App\Models\User;
+use App\Notifications\DeletedUserNotification;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -132,6 +133,8 @@ class HouseholdTest extends TestCase
 
     public function testDeleteUser()
     {
+        \Notification::fake();
+
         // Create a household
         /** @var Household $household */
         $household = Household::factory()->hasOwner()->create();
@@ -152,6 +155,8 @@ class HouseholdTest extends TestCase
         $response->assertOk();
 
         $this->assertModelMissing($user);
+
+        \Notification::assertSentTo($user, DeletedUserNotification::class);
     }
 
     public function testDeleteOwner()
