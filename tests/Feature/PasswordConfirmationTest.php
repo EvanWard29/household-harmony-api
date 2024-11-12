@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Household;
 use App\Models\User;
+use App\Notifications\DeletedUserNotification;
 use Tests\TestCase;
 
 class PasswordConfirmationTest extends TestCase
@@ -13,6 +14,8 @@ class PasswordConfirmationTest extends TestCase
      */
     public function testTokenSuccess()
     {
+        \Notification::fake();
+
         // Create a household
         $household = Household::factory()->hasOwner()->create();
 
@@ -36,6 +39,8 @@ class PasswordConfirmationTest extends TestCase
             ));
 
         $response->assertOk();
+
+        \Notification::assertSentTo($user, DeletedUserNotification::class);
 
         // The user should have been deleted
         $this->assertModelMissing($user);
