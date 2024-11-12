@@ -35,9 +35,8 @@ class HouseholdInviteController
             $token = \Str::random();
         } while (HouseholdInvite::where('token', $token)->exists());
 
-        $invite = HouseholdInvite::make([
-            'token' => $token,
-        ]);
+        $invite = HouseholdInvite::make();
+        $invite->token = $token;
 
         $invite->household()->associate($household);
         $invite->sender()->associate($request->user());
@@ -62,7 +61,6 @@ class HouseholdInviteController
             'password' => \Hash::make($request->input('password')),
 
             'is_active' => true,
-            'email_verified_at' => now(),
         ]);
 
         $child->household()->associate($household);

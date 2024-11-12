@@ -117,7 +117,7 @@ class AuthController
 
         $token = $user->createToken($request->input('device_name'))->plainTextToken;
 
-        return response()->json(['token' => $token]);
+        return response()->json(['token' => $token], \HttpStatus::HTTP_CREATED);
     }
 
     /**
@@ -131,7 +131,7 @@ class AuthController
 
         // Generate a short-lived token to use for password confirmation and cache it
         $token = cache()->remember(
-            "password-confirmation:user:{$request->user()->id}",
+            "password_confirmation:user:{$request->user()->id}",
             config('auth.password_timeout'),
             function () {
                 return \Str::random();

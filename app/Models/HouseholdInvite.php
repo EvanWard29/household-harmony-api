@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HouseholdInvite extends Model
 {
-    protected $fillable = ['email', 'token'];
-
     protected $primaryKey = 'token';
 
     protected $keyType = 'string';

@@ -12,17 +12,17 @@ class PasswordConfirmationMiddleware
     {
         // Check the user has confirmed their password, and the encrypted token is present in the request
         if (
-            ! ($cachedToken = \Cache::get("password-confirmation:user:{$request->user()->id}"))
+            ! ($cachedToken = \Cache::get("password_confirmation:user:{$request->user()->id}"))
             || ! $request->hasCookie('password_confirmation')
         ) {
-            abort(\HttpStatus::HTTP_FORBIDDEN, 'Password has not been confirmed.');
+            abort(\HttpStatus::HTTP_FORBIDDEN, 'Password has not been confirmed or token is missing.');
         }
 
         try {
             // Attempt to decrypt the provided password confirmation token
             $token = \Crypt::decryptString($request->cookie('password_confirmation'));
         } catch (DecryptException $e) {
-            abort(\HttpStatus::HTTP_FORBIDDEN, 'Password confirmation tokens do not match.');
+            abort(\HttpStatus::HTTP_FORBIDDEN, 'Password confirmation token has been modified.');
         }
 
         // Check if the tokens match

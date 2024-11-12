@@ -17,6 +17,12 @@ class UpdateUserRequest extends FormRequest
                 'regex:'.User::USERNAME_REGEX,
                 Rule::unique(User::class),
             ],
+            'email' => [
+                'string',
+                'email',
+                'max:255',
+                Rule::unique(User::class),
+            ],
         ];
     }
 }
