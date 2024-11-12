@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Enums\RolesEnum;
 use App\Http\Controllers\AuthController;
+use App\Models\Household;
+use App\Models\HouseholdInvite;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -62,6 +64,48 @@ class AuthenticationTest extends TestCase
 
         // A verification email should have been sent to the user
         \Notification::assertSentTo($user, VerifyEmail::class);
+    }
+
+    /**
+     * Test confirming an invited/pending user
+     */
+    public function testRegistrationToken()
+    {
+        // Create a household
+        $household = Household::factory()->hasOwner()->create();
+
+        // Create a pending user for the household
+        $user = User::factory()->pending()->for($household)->create();
+
+        // Create an invite token
+        $token = HouseholdInvite::make();
+        $token->token = \Str::random();
+
+        $token->sender()->associate($household->owner);
+        $token->recipient()->associate($user);
+        $token->household()->associate($household);
+
+        $token->save();
+
+        // Attempt to accept the invitation
+        $response = $this->postJson(
+            route('auth.register', ['inviteToken' => $token->token]),
+            [
+                'password' => 'password123!!',
+                'password_confirmation' => 'password123!!',
+            ]
+        );
+
+        $response->assertOk();
+
+        // The user should now be verified, have an active token, and have a password
+        $user->refresh();
+        $this->assertNotNull($user->password);
+        $this->assertTrue($user->is_active);
+        $this->assertTrue($user->hasVerifiedEmail());
+
+        // The token should have been deleted
+        $this->assertModelMissing($token);
     }
 
     /**
