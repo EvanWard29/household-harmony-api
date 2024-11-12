@@ -14,8 +14,6 @@ class PasswordConfirmationTest extends TestCase
      */
     public function testTokenSuccess()
     {
-        \Notification::fake();
-
         // Create a household
         $household = Household::factory()->hasOwner()->create();
 

@@ -18,8 +18,6 @@ class AuthenticationTest extends TestCase
      */
     public function testRegistration()
     {
-        \Notification::fake();
-
         // Generate some test data
         $data = [
             'first_name' => fake()->firstName(),

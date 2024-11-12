@@ -13,6 +13,14 @@ abstract class TestCase extends BaseTestCase
 
     protected bool $seed = true;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Fake all outgoing notifications
+        \Notification::fake();
+    }
+
     public function actingAs(UserContract $user, $guard = null, array $abilities = ['*']): static
     {
         Sanctum::actingAs($user, $abilities, 'api');

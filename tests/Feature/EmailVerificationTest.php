@@ -10,8 +10,6 @@ class EmailVerificationTest extends TestCase
 {
     public function testSend()
     {
-        \Notification::fake();
-
         // Create an unverified user
         $user = User::factory()->unverified()->create();
 

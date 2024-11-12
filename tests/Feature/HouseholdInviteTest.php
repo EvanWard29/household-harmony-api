@@ -15,8 +15,6 @@ class HouseholdInviteTest extends TestCase
      */
     public function testInvite()
     {
-        \Notification::fake();
-
         // Create a household
         $household = Household::factory()->hasOwner()->create();
 

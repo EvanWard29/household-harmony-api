@@ -133,8 +133,6 @@ class HouseholdTest extends TestCase
 
     public function testDeleteUser()
     {
-        \Notification::fake();
-
         // Create a household
         /** @var Household $household */
         $household = Household::factory()->hasOwner()->create();

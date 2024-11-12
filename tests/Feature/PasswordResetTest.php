@@ -13,8 +13,6 @@ class PasswordResetTest extends TestCase
      */
     public function testForgot()
     {
-        \Notification::fake();
-
         // Create a user
         $user = User::factory()->create();
 
