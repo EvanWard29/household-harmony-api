@@ -65,6 +65,21 @@ class UserFactory extends Factory
         ]);
     }
 
+    /**
+     * Create a child user
+     */
+    public function child(): static
+    {
+        return $this->unverified()
+            ->state(function (array $attributes) {
+                return [
+                    'email' => null,
+                    'username' => $attributes['first_name'].$attributes['last_name'],
+                ];
+            })
+            ->afterCreating(fn (User $user) => $user->assignRole(RolesEnum::CHILD));
+    }
+
     public function configure(): static
     {
         return $this->afterCreating(function (User $user) {
