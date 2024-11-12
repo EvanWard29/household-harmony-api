@@ -2,13 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\EmailVerificationController;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
-use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
-#[CoversClass(EmailVerificationController::class)]
 class EmailVerificationTest extends TestCase
 {
     public function testSend()

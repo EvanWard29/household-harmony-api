@@ -3,14 +3,11 @@
 namespace Tests\Feature;
 
 use App\Enums\RolesEnum;
-use App\Http\Controllers\HouseholdInviteController;
 use App\Models\Household;
 use App\Models\User;
 use App\Notifications\HouseholdInviteNotification;
-use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
-#[CoversClass(HouseholdInviteController::class)]
 class HouseholdInviteTest extends TestCase
 {
     /**

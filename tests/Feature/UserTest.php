@@ -2,14 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\UserController;
 use App\Models\Household;
 use App\Models\User;
 use Illuminate\Testing\Fluent\AssertableJson;
-use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
-#[CoversClass(UserController::class)]
 class UserTest extends TestCase
 {
     /**

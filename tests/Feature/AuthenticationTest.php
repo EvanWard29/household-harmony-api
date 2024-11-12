@@ -3,17 +3,14 @@
 namespace Tests\Feature;
 
 use App\Enums\RolesEnum;
-use App\Http\Controllers\AuthController;
 use App\Models\Household;
 use App\Models\HouseholdInvite;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\PersonalAccessToken;
-use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
-#[CoversClass(AuthController::class)]
 class AuthenticationTest extends TestCase
 {
     /**

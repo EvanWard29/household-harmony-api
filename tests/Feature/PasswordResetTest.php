@@ -2,13 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\PasswordResetController;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
-use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
-#[CoversClass(PasswordResetController::class)]
 class PasswordResetTest extends TestCase
 {
     /**

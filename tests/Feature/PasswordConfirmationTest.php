@@ -2,13 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\PasswordConfirmationMiddleware;
 use App\Models\Household;
 use App\Models\User;
-use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
-#[CoversClass(PasswordConfirmationMiddleware::class)]
 class PasswordConfirmationTest extends TestCase
 {
     /**

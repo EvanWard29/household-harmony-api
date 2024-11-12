@@ -3,15 +3,12 @@
 namespace Tests\Feature;
 
 use App\Enums\RolesEnum;
-use App\Http\Controllers\HouseholdController;
 use App\Http\Middleware\PasswordConfirmationMiddleware;
 use App\Models\Household;
 use App\Models\User;
 use Illuminate\Testing\Fluent\AssertableJson;
-use PHPUnit\Framework\Attributes\CoversClass;
 use Tests\TestCase;
 
-#[CoversClass(HouseholdController::class)]
 class HouseholdTest extends TestCase
 {
     public function testShow()
