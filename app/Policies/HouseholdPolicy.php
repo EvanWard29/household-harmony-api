@@ -20,14 +20,6 @@ class HouseholdPolicy
     }
 
     /**
-     * Check if the user can make updates to the requested household
-     */
-    public function update(User $user, Household $household): bool
-    {
-        return $user->can('view', $household) && $user->hasRole(RolesEnum::ADMIN);
-    }
-
-    /**
      * Check if a user can manage household members
      */
     public function manage(User $user, Household $household): bool
