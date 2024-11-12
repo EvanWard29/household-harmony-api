@@ -84,8 +84,9 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user) {
             if (! $user->household->owner_id) {
-                // Set the user as the owner of their household if not already set
+                // Set the user as the owner of their household if not already set and assign them the `admin` role
                 $user->household->update(['owner_id' => $user->id]);
+                $user->assignRole(RolesEnum::ADMIN);
             }
         });
     }
