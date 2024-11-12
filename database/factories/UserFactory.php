@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\RolesEnum;
 use App\Models\Household;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -45,11 +46,21 @@ class UserFactory extends Factory
         return $this->afterCreating(fn (User $user) => $user->createToken($token));
     }
 
+    /**
+     * Assign the {@see RolesEnum::ADMIN} to the user
+     */
+    public function admin(): static
+    {
+        return $this->afterCreating(fn (User $user) => $user->assignRole(RolesEnum::ADMIN));
+    }
+
     public function configure(): static
     {
         return $this->afterCreating(function (User $user) {
-            // Set the user as the owner of their household
-            $user->household->update(['owner_id' => $user->id]);
+            if (! $user->household->owner_id) {
+                // Set the user as the owner of their household if not already set
+                $user->household->update(['owner_id' => $user->id]);
+            }
         });
     }
 }
