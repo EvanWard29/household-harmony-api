@@ -61,7 +61,6 @@ class HouseholdInviteController
             'password' => \Hash::make($request->input('password')),
 
             'is_active' => true,
-            'email_verified_at' => now(),
         ]);
 
         $child->household()->associate($household);
