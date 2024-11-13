@@ -5,6 +5,7 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\HouseholdController;
 use App\Http\Controllers\HouseholdInviteController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,11 +63,10 @@ Route::middleware('auth:api')->group(function () {
     // Household routes
     Route::prefix('household/{household}')
         ->name('household.')
+        ->middleware('can:view,household')
         ->group(function () {
             Route::controller(HouseholdController::class)->group(function () {
-                Route::get('', 'show')
-                    ->can('view', 'household')
-                    ->name('show');
+                Route::get('', 'show')->name('show');
 
                 Route::middleware('can:manage,household')->group(function () {
                     Route::match(['put', 'patch'], '', 'update')->name('update');
@@ -84,5 +84,15 @@ Route::middleware('auth:api')->group(function () {
 
                     Route::post('child', 'createChild')->name('create-child');
                 });
+
+            // Task routes
+            Route::controller(TaskController::class)
+                ->group(function () {
+                    Route::apiResource('task', TaskController::class);
+                });
         });
+});
+
+Route::post('test', function () {
+    return \App\Models\Task::factory()->make();
 });
