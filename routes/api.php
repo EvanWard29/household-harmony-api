@@ -50,14 +50,11 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('user/{user}')
         ->name('user.')
         ->controller(UserController::class)
+        ->middleware('can:view,user')
         ->group(function () {
-            Route::get('', 'show')
-                ->can('view', 'user')
-                ->name('show');
+            Route::get('', 'show')->name('show');
 
-            Route::match(['put', 'patch'], '', 'update')
-                ->can('update', 'user')
-                ->name('update');
+            Route::match(['put', 'patch'], '', 'update')->name('update');
         });
 
     // Household routes
