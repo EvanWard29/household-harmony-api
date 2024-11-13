@@ -53,6 +53,7 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('can:view,user')
         ->group(function () {
             Route::apiSingleton('/', UserController::class);
+            Route::get('task', 'tasks')->name('tasks');
         });
 
     // Household routes

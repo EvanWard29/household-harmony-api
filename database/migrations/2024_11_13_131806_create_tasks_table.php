@@ -2,6 +2,7 @@
 
 use App\Enums\TaskStatusEnum;
 use App\Models\Household;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -20,6 +21,11 @@ return new class extends Migration
 
             $table->foreignIdFor(User::class, 'owner_id')->constrained('users')->cascadeOnDelete();
             $table->foreignIdFor(Household::class)->constrained()->cascadeOnDelete();
+        });
+
+        Schema::create('task_user', function (Blueprint $table) {
+            $table->foreignIdFor(Task::class);
+            $table->foreignIdFor(User::class);
         });
     }
 

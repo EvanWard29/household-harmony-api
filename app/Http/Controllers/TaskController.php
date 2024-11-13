@@ -28,7 +28,15 @@ class TaskController
         $this->authorize('create', Task::class);
 
         $task = $request->user()->household->tasks()->make($request->validated());
+
+        // Set the owner/creator of the task
         $task->owner()->associate($request->user());
+
+        // Set the assigned users
+        if ($request->filled('assigned')) {
+            $task->assigned()->sync($request->input('assigned'));
+        }
+
         $task->save();
 
         return new TaskResource($task);
@@ -50,6 +58,11 @@ class TaskController
         $this->authorize('update', $task);
 
         $task->update($request->validated());
+
+        // Set the assigned users
+        if ($request->filled('assigned')) {
+            $task->assigned()->sync($request->input('assigned'));
+        }
 
         return new TaskResource($task);
     }

@@ -31,4 +31,12 @@ class UserController
 
         return new UserResource($user);
     }
+
+    /**
+     * Get a user's tasks
+     */
+    public function tasks(User $user)
+    {
+        return TaskResource::collection($user->tasks);
+    }
 }

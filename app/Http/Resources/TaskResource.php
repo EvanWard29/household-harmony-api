@@ -19,6 +19,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
             'owner_id' => $this->owner_id,
             'household_id' => $this->household_id,
+            'assigned' => UserResource::collection($this->assigned),
         ];
     }
 }

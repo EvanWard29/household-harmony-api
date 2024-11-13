@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\TaskStatusEnum;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,6 +16,10 @@ class TaskRequest extends FormRequest
             'description' => ['required', 'string', 'max:65535'],
             'status' => ['required', Rule::enum(TaskStatusEnum::class)],
             'deadline' => ['nullable', 'date'],
+
+            'assigned' => ['array', 'exclude'],
+            'assigned.*' => ['integer', Rule::exists(User::class)
+                ->where('household_id', $this->user()->household_id)],
 
             'owner_id' => ['missing'],
             'household_id' => ['missing'],

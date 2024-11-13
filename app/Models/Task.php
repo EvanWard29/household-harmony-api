@@ -6,6 +6,7 @@ use App\Enums\TaskStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Task extends Model
 {
@@ -24,7 +25,7 @@ class Task extends Model
     }
 
     /**
-     * The household the tasks belongs to
+     * The household this tasks belongs to
      */
     public function household(): BelongsTo
     {
@@ -32,10 +33,18 @@ class Task extends Model
     }
 
     /**
-     * The user who created the task
+     * The user who created this task
      */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * The users this task is assigned to
+     */
+    public function assigned(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
     }
 }
