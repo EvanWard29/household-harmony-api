@@ -52,9 +52,7 @@ Route::middleware('auth:api')->group(function () {
         ->controller(UserController::class)
         ->middleware('can:view,user')
         ->group(function () {
-            Route::get('', 'show')->name('show');
-
-            Route::match(['put', 'patch'], '', 'update')->name('update');
+            Route::apiSingleton('/', UserController::class);
         });
 
     // Household routes
