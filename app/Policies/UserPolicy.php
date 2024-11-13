@@ -12,7 +12,7 @@ class UserPolicy
 
     public function view(User $authenticatedUser, User $user): bool
     {
-        return $authenticatedUser->id === $user->id;
+        return $authenticatedUser->is($user);
     }
 
     /**
@@ -20,8 +20,6 @@ class UserPolicy
      */
     public function update(User $authenticatedUser, User $user): bool
     {
-        return $authenticatedUser->can('view', $user)
-            || ($authenticatedUser->can('manage', $user->household)
-                && ! $user->hasRole(RolesEnum::ADMIN));
+        return $authenticatedUser->is($user) || $authenticatedUser->hasRole(RolesEnum::ADMIN);
     }
 }
