@@ -52,6 +52,11 @@ class TaskService
             });
         }
 
+        // Filter tasks by group
+        if (request()->filled('group_id')) {
+            $tasks = $tasks->whereRelation('group', 'id', request()->integer('group_id'));
+        }
+
         $tasks->with(['assigned.roles', 'group']);
 
         return $tasks->get();

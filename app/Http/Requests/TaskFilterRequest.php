@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\TaskStatusEnum;
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -25,6 +26,12 @@ class TaskFilterRequest extends FormRequest
                 'int',
                 Rule::exists(User::class, 'id')
                     ->where('household_id', $this->route('household')),
+            ],
+
+            'group_id' => [
+                'int',
+                Rule::exists(Group::class, 'id')
+                    ->where('household_id', $this->user()->household_id),
             ],
         ];
     }
