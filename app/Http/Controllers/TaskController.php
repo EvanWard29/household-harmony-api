@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TaskFilterRequest;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
+use App\Models\Group;
 use App\Models\Household;
 use App\Models\Task;
 use App\Services\TaskService;
@@ -41,6 +42,11 @@ class TaskController
             $task->assigned()->sync($request->input('assigned'));
         }
 
+        // Group the task
+        if ($request->filled('group_id')) {
+            $task->group()->associate(Group::findOrFail($request->integer('group_id')));
+        }
+
         $task->save();
 
         return new TaskResource($task);
@@ -66,6 +72,11 @@ class TaskController
         // Set the assigned users
         if ($request->filled('assigned')) {
             $task->assigned()->sync($request->input('assigned'));
+        }
+
+        // Group the task
+        if ($request->filled('group_id')) {
+            $task->group()->associate(Group::findOrFail($request->integer('group_id')));
         }
 
         return new TaskResource($task);

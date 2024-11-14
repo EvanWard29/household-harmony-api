@@ -52,7 +52,7 @@ class TaskService
             });
         }
 
-        $tasks->with('assigned.roles');
+        $tasks->with(['assigned.roles', 'group']);
 
         return $tasks->get();
     }

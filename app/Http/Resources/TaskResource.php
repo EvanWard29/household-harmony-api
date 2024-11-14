@@ -16,6 +16,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
             'description' => $this->description,
             'status' => $this->status,
             'deadline' => $this->deadline,
+            'group' => new GroupResource($this->group),
 
             'owner_id' => $this->owner_id,
             'household_id' => $this->household_id,
