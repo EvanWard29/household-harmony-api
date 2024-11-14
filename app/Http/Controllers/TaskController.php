@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\TaskStatusEnum;
+use App\Http\Requests\TaskFilterRequest;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Household;
 use App\Models\Task;
-use App\Models\User;
 use App\Services\TaskService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class TaskController
 {
@@ -22,24 +19,8 @@ class TaskController
     /**
      * Retrieve all tasks of the given household
      */
-    public function index(Request $request, Household $household)
+    public function index(TaskFilterRequest $request, Household $household)
     {
-        $request->validate([
-            'status' => [Rule::enum(TaskStatusEnum::class)],
-
-            'deadline.start.date' => ['date_format:Y-m-d', 'required_with:deadline'],
-            'deadline.start.time' => ['date_format:H:i'],
-
-            'deadline.end.date' => ['date_format:Y-m-d', 'required_with:deadline'],
-            'deadline.end.time' => ['date_format:H:i'],
-
-            'assigned' => ['array'],
-            'assigned.*' => [
-                'int',
-                Rule::exists(User::class, 'id')->where('household_id', $household->id),
-            ],
-        ]);
-
         return TaskResource::collection($this->service->getTasks($household));
     }
 
