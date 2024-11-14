@@ -47,4 +47,12 @@ class Task extends Model
     {
         return $this->belongsToMany(User::class);
     }
+
+    /**
+     * The group/category this task belongs to
+     */
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
+    }
 }

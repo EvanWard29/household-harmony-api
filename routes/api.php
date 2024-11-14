@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HouseholdController;
 use App\Http\Controllers\HouseholdInviteController;
 use App\Http\Controllers\PasswordResetController;
@@ -85,6 +86,12 @@ Route::middleware('auth:api')->group(function () {
             Route::controller(TaskController::class)
                 ->group(function () {
                     Route::apiResource('task', TaskController::class);
+                });
+
+            // Group routes
+            Route::controller(GroupController::class)
+                ->group(function () {
+                    Route::apiResource('group', GroupController::class);
                 });
         });
 });

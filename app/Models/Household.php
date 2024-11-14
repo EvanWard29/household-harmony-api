@@ -38,4 +38,12 @@ class Household extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+    /**
+     * The groups/categories of the household
+     */
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class);
+    }
 }
