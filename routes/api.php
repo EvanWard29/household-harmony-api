@@ -88,7 +88,3 @@ Route::middleware('auth:api')->group(function () {
                 });
         });
 });
-
-Route::post('test', function () {
-    return \App\Models\Task::factory()->make();
-});
