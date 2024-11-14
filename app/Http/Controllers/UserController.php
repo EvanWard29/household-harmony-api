@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskFilterRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\TaskResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\TaskService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserController
 {
@@ -34,9 +37,11 @@ class UserController
 
     /**
      * Get a user's tasks
+     *
+     * @return AnonymousResourceCollection<TaskResource>
      */
-    public function tasks(User $user)
+    public function tasks(TaskFilterRequest $request, User $user): AnonymousResourceCollection
     {
-        return TaskResource::collection($user->tasks);
+        return TaskResource::collection(app(TaskService::class)->getTasks($user));
     }
 }
