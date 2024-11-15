@@ -19,11 +19,12 @@ class UserResource extends JsonResource
             'username' => $this->username,
             'email_verified_at' => $this->email_verified_at,
             'is_active' => $this->is_active,
+            'is_admin' => $this->isAdmin(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
 
             'household_id' => $this->household_id,
-            'roles' => $this->roles->pluck('name'),
+            'permissions' => $this->permissions->pluck('name'),
         ];
     }
 }

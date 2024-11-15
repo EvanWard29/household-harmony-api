@@ -11,6 +11,8 @@ class HouseholdResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $this->load('users.permissions');
+
         return [
             'id' => $this->id,
             'owner_id' => $this->owner_id,
