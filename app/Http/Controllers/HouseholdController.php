@@ -56,6 +56,8 @@ class HouseholdController
      */
     public function deleteUser(Request $request, Household $household, User $user): HouseholdResource
     {
+        \Gate::authorize('manage', $household);
+
         // Users cannot delete their account if they are the owner of the household
         if ($request->user()->id === $user->id && $household->owner_id === $user->id) {
             abort(
