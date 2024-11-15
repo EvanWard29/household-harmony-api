@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Enums\RolesEnum;
+use App\Enums\PermissionsEnum;
 use App\Models\Household;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -16,7 +16,7 @@ class HouseholdPolicy
      */
     public function view(User $user, Household $household): bool
     {
-        return $user->household_id === $household->id;
+        return $user->household()->is($household);
     }
 
     /**
@@ -24,6 +24,6 @@ class HouseholdPolicy
      */
     public function manage(User $user, Household $household): bool
     {
-        return $user->can('view', $household) && $user->hasRole(RolesEnum::ADMIN);
+        return $user->hasPermissionTo(PermissionsEnum::MEMBER_MANAGE);
     }
 }

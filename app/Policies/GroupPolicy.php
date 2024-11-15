@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\PermissionsEnum;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -10,29 +11,10 @@ class GroupPolicy
     use HandlesAuthorization;
 
     /**
-     * Check if user has permission to create groups
+     * Check if a user can manage groups/categories
      */
-    public function create(User $user): bool
+    public function manage(User $user): bool
     {
-        // TODO: User has permission to create groups
-        return true;
-    }
-
-    /**
-     * Check if user has permission to edit groups
-     */
-    public function update(User $user): bool
-    {
-        // TODO: User has permission to edit groups
-        return true;
-    }
-
-    /**
-     * Check if user has permission to delete groups
-     */
-    public function delete(User $user): bool
-    {
-        // TODO: User has permission to delete groups
-        return true;
+        return $user->hasPermissionTo(PermissionsEnum::GROUP_MANAGE);
     }
 }

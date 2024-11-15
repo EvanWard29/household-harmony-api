@@ -28,7 +28,7 @@ class GroupController
      */
     public function store(GroupRequest $request, Household $household): GroupResource
     {
-        $this->authorize('create', Group::class);
+        $this->authorize('manage', Group::class);
 
         $group = Group::make($request->validated());
 
@@ -52,7 +52,7 @@ class GroupController
      */
     public function update(GroupRequest $request, Household $household, Group $group): GroupResource
     {
-        $this->authorize('update', Group::class);
+        $this->authorize('manage', Group::class);
 
         $group->update($request->validated());
 
@@ -64,7 +64,7 @@ class GroupController
      */
     public function destroy(Household $household, Group $group)
     {
-        $this->authorize('delete', Group::class);
+        $this->authorize('manage', Group::class);
 
         $group->delete();
 

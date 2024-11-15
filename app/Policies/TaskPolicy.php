@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Enums\RolesEnum;
+use App\Enums\PermissionsEnum;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -16,8 +16,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        // TODO: User should have permission to create tasks
-        return true;
+        return $user->hasPermissionTo(PermissionsEnum::TASK_CREATE);
     }
 
     /**
@@ -25,8 +24,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        // TODO: User should own the task or have permission to update tasks
-        return $task->owner()->is($user) || $user->hasRole(RolesEnum::ADMIN);
+        return $task->owner()->is($user) || $user->hasPermissionTo(PermissionsEnum::TASK_EDIT);
     }
 
     /**
@@ -34,7 +32,6 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        // TODO: User should either own task or have permission to delete tasks
-        return $task->owner()->is($user) || $user->hasRole(RolesEnum::ADMIN);
+        return $task->owner()->is($user) || $user->hasPermissionTo(PermissionsEnum::TASK_DELETE);
     }
 }
