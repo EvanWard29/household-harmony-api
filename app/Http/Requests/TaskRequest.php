@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\TaskStatusEnum;
 use App\Models\Group;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +17,7 @@ class TaskRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:65535'],
             'status' => ['required', Rule::enum(TaskStatusEnum::class)],
-            'deadline' => ['nullable', 'date'],
+            'deadline' => ['nullable', 'date_format:'.Carbon::ATOM],
 
             'assigned' => ['array', 'exclude'],
             'assigned.*' => [
