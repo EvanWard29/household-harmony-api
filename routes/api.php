@@ -47,16 +47,6 @@ Route::prefix('user')->name('user.')->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
-    // User routes
-    Route::prefix('user/{user}')
-        ->name('user.')
-        ->controller(UserController::class)
-        ->middleware('can:view,user')
-        ->group(function () {
-            Route::apiSingleton('/', UserController::class);
-            Route::get('task', 'tasks')->name('tasks');
-        });
-
     // Household routes
     Route::prefix('household/{household}')
         ->name('household.')
@@ -77,6 +67,14 @@ Route::middleware('auth:api')->group(function () {
                     Route::post('permission', 'permissions')->name('set-permissions');
                 });
             });
+
+            Route::controller(UserController::class)
+                ->prefix('user/{user}')
+                ->name('user.')
+                ->group(function () {
+                    Route::apiSingleton('/', UserController::class);
+                    Route::get('task', 'tasks')->name('tasks');
+                });
 
             Route::controller(HouseholdInviteController::class)
                 ->middleware('can:manage,household')

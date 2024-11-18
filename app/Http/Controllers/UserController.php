@@ -6,6 +6,7 @@ use App\Http\Requests\TaskFilterRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\TaskResource;
 use App\Http\Resources\UserResource;
+use App\Models\Household;
 use App\Models\User;
 use App\Services\TaskService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -18,7 +19,7 @@ class UserController
     /**
      * Get the requesting {@see User}
      */
-    public function show(User $user): UserResource
+    public function show(Household $household, User $user): UserResource
     {
         return new UserResource($user);
     }
@@ -26,7 +27,7 @@ class UserController
     /**
      * Update the requesting {@see User}
      */
-    public function update(UpdateUserRequest $request, User $user): UserResource
+    public function update(UpdateUserRequest $request, Household $household, User $user): UserResource
     {
         $this->authorize('update', $user);
 
@@ -40,7 +41,7 @@ class UserController
      *
      * @return AnonymousResourceCollection<TaskResource>
      */
-    public function tasks(TaskFilterRequest $request, User $user): AnonymousResourceCollection
+    public function tasks(TaskFilterRequest $request, Household $household, User $user): AnonymousResourceCollection
     {
         return TaskResource::collection(app(TaskService::class)->getTasks($user));
     }

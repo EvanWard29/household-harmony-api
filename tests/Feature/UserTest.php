@@ -18,7 +18,10 @@ class UserTest extends TestCase
         $user = User::factory()->create();
 
         // Get the user's details
-        $response = $this->actingAs($user)->getJson(route('user.show', ['user' => $user]));
+        $response = $this->actingAs($user)->getJson(route(
+            'household.user.show',
+            ['household' => $user->household, 'user' => $user]
+        ));
 
         $response->assertOk();
         $response->assertJson(function (AssertableJson $json) {
@@ -40,7 +43,7 @@ class UserTest extends TestCase
 
         // Update the user's details
         $response = $this->actingAs($user)->patchJson(
-            route('user.update', ['user' => $user]),
+            route('household.user.update', ['household' => $user->household, 'user' => $user]),
             [
                 'username' => $username = fake()->userName(),
             ]
@@ -66,7 +69,7 @@ class UserTest extends TestCase
 
         // Attempt to change the details of the created user as the admin
         $response = $this->actingAs($household->owner)->patchJson(
-            route('user.update', ['user' => $user]),
+            route('household.user.update', ['household' => $household, 'user' => $user]),
             [
                 'username' => $username = fake()->userName(),
             ]
@@ -92,7 +95,7 @@ class UserTest extends TestCase
 
         // Attempt to change the details of the created user as the non-admin
         $response = $this->actingAs($user)->patchJson(
-            route('user.update', ['user' => $household->owner]),
+            route('household.user.update', ['household' => $household, 'user' => $household->owner]),
             [
                 'username' => fake()->userName(),
             ]
@@ -111,7 +114,7 @@ class UserTest extends TestCase
 
         // Update the user's details
         $response = $this->actingAs($user)->patchJson(
-            route('user.update', ['user' => $user]),
+            route('household.user.update', ['household' => $user->household, 'user' => $user]),
             [
                 'username' => fake()->email(),
             ]
