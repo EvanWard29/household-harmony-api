@@ -15,7 +15,8 @@ class UserPolicy
      */
     public function view(User $authenticatedUser, User $user): bool
     {
-        return $authenticatedUser->is($user);
+        return $authenticatedUser->is($user)
+            || $authenticatedUser->household()->is($user->household) && $authenticatedUser->isAdmin();
     }
 
     /**
