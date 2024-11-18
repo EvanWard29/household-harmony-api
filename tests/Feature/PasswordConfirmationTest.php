@@ -32,7 +32,7 @@ class PasswordConfirmationTest extends TestCase
             ->withCredentials()
             ->withUnencryptedCookie('password_confirmation', \Crypt::encryptString($token))
             ->deleteJson(route(
-                'household.delete-user',
+                'household.user.delete',
                 ['household' => $household, 'user' => $user = $users->random()]
             ));
 
@@ -67,7 +67,7 @@ class PasswordConfirmationTest extends TestCase
         $response = $this->actingAs($household->owner)
             ->withCredentials()
             ->deleteJson(route(
-                'household.delete-user',
+                'household.user.delete',
                 ['household' => $household, 'user' => $users->random()]
             ));
 
@@ -103,7 +103,7 @@ class PasswordConfirmationTest extends TestCase
             ->withCredentials()
             ->withUnencryptedCookie('password_confirmation', $token)
             ->deleteJson(route(
-                'household.delete-user',
+                'household.user.delete',
                 ['household' => $household, 'user' => $users->random()]
             ));
 
@@ -136,7 +136,7 @@ class PasswordConfirmationTest extends TestCase
             ->withCredentials()
             ->withUnencryptedCookie('password_confirmation', \Crypt::encryptString(\Str::random()))
             ->deleteJson(route(
-                'household.delete-user',
+                'household.user.delete',
                 ['household' => $household, 'user' => $users->random()]
             ));
 

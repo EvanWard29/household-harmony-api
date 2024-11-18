@@ -59,10 +59,10 @@ Route::middleware('auth:api')->group(function () {
                     Route::match(['put', 'patch'], '', 'update')->name('update');
                 });
 
-                Route::prefix('user/{user}')->group(function () {
+                Route::prefix('user/{user}')->name('user.')->group(function () {
                     Route::delete('/', 'deleteUser')
                         ->middleware('password.confirm')
-                        ->name('delete-user');
+                        ->name('delete');
 
                     Route::post('permission', 'permissions')->name('set-permissions');
                 });
@@ -73,7 +73,7 @@ Route::middleware('auth:api')->group(function () {
                 ->name('user.')
                 ->group(function () {
                     Route::apiSingleton('/', UserController::class);
-                    Route::get('task', 'tasks')->name('tasks');
+                    Route::get('task', 'tasks')->name('task');
                 });
 
             Route::controller(HouseholdInviteController::class)

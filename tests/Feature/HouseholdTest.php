@@ -149,7 +149,7 @@ class HouseholdTest extends TestCase
         // Attempt to remove one of the users
         $response = $this->actingAs($household->owner)
             ->withoutMiddleware(PasswordConfirmationMiddleware::class)
-            ->deleteJson(route('household.delete-user', ['household' => $household, 'user' => $user]));
+            ->deleteJson(route('household.user.delete', ['household' => $household, 'user' => $user]));
 
         $response->assertOk();
 
@@ -168,7 +168,7 @@ class HouseholdTest extends TestCase
         $response = $this->actingAs($household->owner)
             ->withoutMiddleware(PasswordConfirmationMiddleware::class)
             ->deleteJson(
-                route('household.delete-user', ['household' => $household, 'user' => $household->owner])
+                route('household.user.delete', ['household' => $household, 'user' => $household->owner])
             );
 
         $response->assertForbidden();
@@ -191,7 +191,7 @@ class HouseholdTest extends TestCase
         $response = $this->actingAs($household->owner)
             ->withoutMiddleware(PasswordConfirmationMiddleware::class)
             ->deleteJson(
-                route('household.delete-user', ['household' => $household, 'user' => $user])
+                route('household.user.delete', ['household' => $household, 'user' => $user])
             );
 
         $response->assertForbidden();
@@ -215,7 +215,7 @@ class HouseholdTest extends TestCase
         // Attempt to assign a user all permissions
         $response = $this->actingAs($household->owner)->postJson(
             route(
-                'household.set-permissions',
+                'household.user.set-permissions',
                 ['household' => $household, 'user' => $user = $users->random()]
             ),
             [
@@ -242,7 +242,7 @@ class HouseholdTest extends TestCase
         // Attempt to assign a user the admin role
         $response = $this->actingAs($household->owner)->postJson(
             route(
-                'household.set-permissions',
+                'household.user.set-permissions',
                 ['household' => $household, 'user' => $user = $users->random()]
             ),
             [
@@ -270,7 +270,7 @@ class HouseholdTest extends TestCase
         // Attempt to assign a user some permissions
         $response = $this->actingAs($household->owner)->postJson(
             route(
-                'household.set-permissions',
+                'household.user.set-permissions',
                 ['household' => $household, 'user' => $users->random()]
             ),
             [
@@ -299,7 +299,7 @@ class HouseholdTest extends TestCase
         // Attempt to assign a user the admin role with permissions
         $response = $this->actingAs($household->owner)->postJson(
             route(
-                'household.set-permissions',
+                'household.user.set-permissions',
                 ['household' => $household, 'user' => $users->random()]
             ),
             [
@@ -330,7 +330,7 @@ class HouseholdTest extends TestCase
         // Attempt to assign permissions to a user
         $response = $this->actingAs($user)->postJson(
             route(
-                'household.set-permissions',
+                'household.user.set-permissions',
                 ['household' => $household, 'user' => $users->where('id', '!=', $user->id)->random()]
             ),
             [
@@ -360,7 +360,7 @@ class HouseholdTest extends TestCase
         // Attempt to assign permissions to the owner
         $response = $this->actingAs($user)->postJson(
             route(
-                'household.set-permissions',
+                'household.user.set-permissions',
                 ['household' => $household, 'user' => $household->owner]
             ),
             [
@@ -390,7 +390,7 @@ class HouseholdTest extends TestCase
         // Attempt to assign permissions to a random user
         $response = $this->actingAs($user)->postJson(
             route(
-                'household.set-permissions',
+                'household.user.set-permissions',
                 ['household' => $household, 'user' => $users->where('id', '!=', $user->id)->random()]
             ),
             [
@@ -416,7 +416,7 @@ class HouseholdTest extends TestCase
         // Attempt to assign permissions yourself
         $response = $this->actingAs($household->owner)->postJson(
             route(
-                'household.set-permissions',
+                'household.user.set-permissions',
                 ['household' => $household, 'user' => $household->owner]
             ),
             [
@@ -446,7 +446,7 @@ class HouseholdTest extends TestCase
         // Remove admin from the user
         $response = $this->actingAs($household->owner)->postJson(
             route(
-                'household.set-permissions',
+                'household.user.set-permissions',
                 ['household' => $household, 'user' => $user]
             ),
             [
