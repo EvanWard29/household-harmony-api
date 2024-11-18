@@ -37,17 +37,17 @@ class TaskController
         // Set the owner/creator of the task
         $task->owner()->associate($request->user());
 
-        // Set the assigned users
-        if ($request->filled('assigned')) {
-            $task->assigned()->sync($request->input('assigned'));
-        }
-
         // Group the task
         if ($request->filled('group_id')) {
             $task->group()->associate(Group::findOrFail($request->integer('group_id')));
         }
 
         $task->save();
+
+        // Set the assigned users
+        if ($request->filled('assigned')) {
+            $task->assigned()->sync($request->input('assigned'));
+        }
 
         return new TaskResource($task);
     }
