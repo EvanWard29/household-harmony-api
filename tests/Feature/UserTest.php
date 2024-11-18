@@ -24,7 +24,8 @@ class UserTest extends TestCase
         $response->assertJson(function (AssertableJson $json) {
             $json->has('data.id')
                 ->has('data.household_id')
-                ->has('data.roles')
+                ->has('data.permissions')
+                ->has('data.is_admin')
                 ->missing('data.password');
         });
     }
