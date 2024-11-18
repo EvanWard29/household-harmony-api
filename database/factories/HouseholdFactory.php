@@ -39,4 +39,12 @@ class HouseholdFactory extends Factory
             $household->owner()->associate($owner);
         });
     }
+
+    /**
+     * Create the household with some additional users
+     */
+    public function withUsers(?int $count = null): static
+    {
+        return $this->has(User::factory(! $count ? rand(2, 5) : $count));
+    }
 }
