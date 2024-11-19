@@ -20,14 +20,14 @@ class TaskFactory extends Factory
             'description' => fake()->text(),
             'status' => TaskStatusEnum::TODO,
             'deadline' => now()->addDays(3)->startOfMinute(),
+
+            'household_id' => Household::factory(),
             'group_id' => function (array $attributes) {
                 return Group::factory()->for(Household::findOrFail($attributes['household_id']));
             },
-
             'owner_id' => function (array $attributes) {
                 return User::factory()->for(Household::findOrFail($attributes['household_id']));
             },
-            'household_id' => Household::factory(),
         ];
     }
 }
