@@ -68,6 +68,7 @@ Route::middleware('auth:api')->group(function () {
                 });
             });
 
+            // User routes
             Route::controller(UserController::class)
                 ->prefix('user/{user}')
                 ->name('user.')
@@ -76,6 +77,7 @@ Route::middleware('auth:api')->group(function () {
                     Route::get('task', 'tasks')->name('task');
                 });
 
+            // Invite routes
             Route::controller(HouseholdInviteController::class)
                 ->middleware('can:manage,household')
                 ->group(function () {
