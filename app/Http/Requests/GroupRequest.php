@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class GroupRequest extends FormRequest
 {
@@ -14,7 +13,7 @@ class GroupRequest extends FormRequest
                 'string',
                 'max:255',
                 'filled',
-                Rule::requiredIf(in_array($this->method(), [self::METHOD_POST, self::METHOD_PUT])),
+                'required',
             ],
             'description' => ['string', 'nullable', 'max:65535'],
         ];
