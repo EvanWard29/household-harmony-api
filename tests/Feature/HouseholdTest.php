@@ -134,17 +134,12 @@ class HouseholdTest extends TestCase
 
     public function testDeleteUser()
     {
-        // Create a household
+        // Create a household with some additional users
         /** @var Household $household */
-        $household = Household::factory()->hasOwner()->create();
-
-        // Create some additional users for the household
-        User::factory()->for($household)->count(3)->create();
+        $household = Household::factory()->hasOwner()->withUsers()->create();
 
         // Get a user to remove that is not the owner/admin
-        $user = $household->users->where(function (User $user) use ($household) {
-            return $user->id != $household->owner_id;
-        })->random();
+        $user = $household->users->where('id', '!=', $household->owner_id)->random();
 
         // Attempt to remove one of the users
         $response = $this->actingAs($household->owner)
@@ -232,18 +227,18 @@ class HouseholdTest extends TestCase
      */
     public function testAssignAdmin()
     {
-        // Create a household
+        // Create a household with some additional users
         /** @var Household $household */
-        $household = Household::factory()->hasOwner()->create();
+        $household = Household::factory()->hasOwner()->withUsers()->create();
 
-        // Create some additional users for the household
-        $users = User::factory()->for($household)->count(3)->create();
+        // Get a random user to assign admin
+        $user = $household->users->where('id', '!=', $household->owner_id)->random();
 
         // Attempt to assign a user the admin role
         $response = $this->actingAs($household->owner)->postJson(
             route(
                 'household.user.set-permissions',
-                ['household' => $household, 'user' => $user = $users->random()]
+                ['household' => $household, 'user' => $user]
             ),
             [
                 'admin' => true,
