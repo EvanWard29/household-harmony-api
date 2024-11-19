@@ -16,6 +16,13 @@ class Task extends Model
 
     protected $guarded = ['id'];
 
+    /**
+     * @var array Default model attribute values
+     */
+    protected $attributes = [
+        'status' => TaskStatusEnum::TODO,
+    ];
+
     protected function casts(): array
     {
         return [
