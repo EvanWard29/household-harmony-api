@@ -6,6 +6,7 @@ use App\Enums\TaskStatusEnum;
 use App\Models\Group;
 use App\Models\Household;
 use App\Models\Task;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -30,6 +31,61 @@ class TaskTest extends TestCase
         $response->assertJson(function (AssertableJson $json) {
             $json->has('data', 5);
         });
+    }
+
+    /**
+     * Test filtering a household's tasks
+     */
+    public function testIndexFilter()
+    {
+        // Create a household
+        $household = Household::factory()
+            ->hasOwner()
+            ->withUsers(4)
+            ->hasGroups(2)
+            ->create();
+
+        // Create some tasks
+        Task::factory(rand(100, 200))
+            ->for($household)
+            ->sequence(fn () => ['status' => \Arr::random(TaskStatusEnum::cases())])
+            ->sequence(fn () => ['owner_id' => $household->users->random()->id])
+            ->sequence(fn () => ['group_id' => $household->groups->random()->id])
+            ->create();
+
+        // Filter the household's tasks
+        $response = $this->actingAs($household->users->random())->getJson(route(
+            'household.task.index',
+            [
+                'household' => $household,
+
+                'status' => TaskStatusEnum::TODO,
+                'deadline' => [
+                    'start' => [
+                        'date' => ($start = today())->toDateString(),
+                    ],
+                    'end' => [
+                        'date' => ($end = today()->addDays(4))->toDateString(),
+                    ],
+                ],
+                'group_id' => ($group = $household->groups->random())->id,
+                'assigned' => $assigned = $household->users->random(rand(1, 2))->pluck('id')->toArray(),
+            ]
+        ));
+
+        $response->assertOk();
+
+        // Get all tasks with the filtered status, group, deadline, and assigned users
+        $tasks = $household->tasks()
+            ->where('status', TaskStatusEnum::TODO)
+            ->whereBetween('deadline', [$start->startOfDay(), $end->endOfDay()])
+            ->whereRelation('group', 'id', $group->id)
+            ->whereHas('assigned', function (Builder $query) use ($assigned) {
+                $query->whereIn('id', $assigned);
+            })
+            ->get();
+
+        $response->assertJsonCount($tasks->count(), 'data');
     }
 
     /**
