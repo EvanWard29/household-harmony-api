@@ -11,15 +11,6 @@ class UserPolicy
     use HandlesAuthorization;
 
     /**
-     * Check if requesting user has permission to view user
-     */
-    public function view(User $authenticatedUser, User $user): bool
-    {
-        return $authenticatedUser->is($user)
-            || $authenticatedUser->household()->is($user->household) && $authenticatedUser->isAdmin();
-    }
-
-    /**
      * Check if the requesting user has permission to edit the user
      */
     public function update(User $authenticatedUser, User $user): bool
