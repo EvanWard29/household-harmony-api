@@ -14,10 +14,10 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => $firstName = fake()->firstName(),
-            'last_name' => $lastName = fake()->lastName(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
-            'username' => $firstName.$lastName,
+            'username' => fake()->unique()->userName(),
             'email_verified_at' => now(),
             'password' => \Hash::make('password123!!'),
             'is_active' => true,
