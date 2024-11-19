@@ -15,7 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
             'title' => $this->title,
             'description' => $this->description,
             'status' => $this->status,
-            'deadline' => $this->deadline->toAtomString(),
+            'deadline' => $this->deadline?->toAtomString(),
             'group' => new GroupResource($this->group),
 
             'owner_id' => $this->owner_id,
