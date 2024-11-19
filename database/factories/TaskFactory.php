@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\Household;
 use App\Models\Task;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TaskFactory extends Factory
@@ -19,7 +20,7 @@ class TaskFactory extends Factory
             'title' => fake()->words(asText: true),
             'description' => fake()->text(),
             'status' => TaskStatusEnum::TODO,
-            'deadline' => now()->addDays(3)->startOfMinute(),
+            'deadline' => Carbon::parse(fake()->dateTimeBetween('now', '+1 week'))->startOfMinute(),
 
             'household_id' => Household::factory(),
             'group_id' => function (array $attributes) {
