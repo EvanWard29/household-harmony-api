@@ -28,6 +28,7 @@ class TaskRequest extends FormRequest
 
             'group_id' => [
                 'int',
+                'nullable',
                 Rule::exists(Group::class, 'id')
                     ->where('household_id', $this->user()->household_id),
             ],
