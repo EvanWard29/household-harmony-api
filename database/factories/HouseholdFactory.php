@@ -40,6 +40,7 @@ class HouseholdFactory extends Factory
             }
 
             $household->owner()->associate($owner);
+            $household->save();
         });
     }
 

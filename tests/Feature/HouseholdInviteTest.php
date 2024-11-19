@@ -29,6 +29,7 @@ class HouseholdInviteTest extends TestCase
         );
 
         $response->assertOk();
+        $household->refresh();
 
         // A new user should have been created for the household
         $this->assertCount(2, $household->users);
@@ -115,6 +116,7 @@ class HouseholdInviteTest extends TestCase
         );
 
         $response->assertCreated();
+        $household->refresh();
 
         // A new user should have been created for the household
         $this->assertCount(2, $household->users);
