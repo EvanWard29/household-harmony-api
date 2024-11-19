@@ -85,7 +85,7 @@ class TaskController
     /**
      * Delete the given task
      */
-    public function destroy(Task $task)
+    public function destroy(Household $household, Task $task)
     {
         $this->authorize('delete', $task);
 
