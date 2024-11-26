@@ -3,14 +3,18 @@
 namespace App\Models;
 
 use App\Enums\RolesEnum;
+use App\Services\UserService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+
+use function Illuminate\Events\queueable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -72,6 +76,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * The user's reminder settings for tasks
+     */
+    public function reminders(): HasMany
+    {
+        return $this->hasMany(UserReminder::class);
+    }
+
+    /**
      * Check if user is an admin
      */
     public function isAdmin(): bool
@@ -90,5 +102,15 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function getDefaultGuardName(): string
     {
         return config('auth.defaults.guard');
+    }
+
+    protected static function booted(): void
+    {
+        static::created(queueable(function (User $user) {
+            if ($user->reminders()->doesntExist()) {
+                // Create reminder settings for newly created users
+                app(UserService::class, ['user' => $user])->createDefaultReminders();
+            }
+        }));
     }
 }
