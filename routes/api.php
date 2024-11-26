@@ -72,6 +72,7 @@ Route::middleware('auth:api')->group(function () {
             Route::controller(UserController::class)
                 ->prefix('user/{user}')
                 ->name('user.')
+                ->scopeBindings()
                 ->group(function () {
                     Route::apiSingleton('/', UserController::class);
                     Route::get('task', 'tasks')->name('task');
