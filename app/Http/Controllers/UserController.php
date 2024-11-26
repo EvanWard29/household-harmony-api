@@ -21,6 +21,8 @@ class UserController
      */
     public function show(Household $household, User $user): UserResource
     {
+        $user->load(['reminders']);
+
         return new UserResource($user);
     }
 

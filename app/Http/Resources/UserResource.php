@@ -25,7 +25,7 @@ class UserResource extends JsonResource
 
             'household_id' => $this->household_id,
             'permissions' => $this->getAllPermissions()->pluck('name'),
-            'reminders' => $this->reminders,
+            'reminders' => $this->whenLoaded('reminders'),
         ];
     }
 }
