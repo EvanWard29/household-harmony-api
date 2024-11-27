@@ -177,7 +177,9 @@ class TaskTest extends TestCase
                     'group',
                     'owner_id',
                     'household_id',
-                ])->has('assigned', $assigned->count());
+                ])
+                    ->has('assigned', $assigned->count())
+                    ->has('reminders');
             });
         });
     }
