@@ -19,12 +19,12 @@ class SendTaskReminderCommand extends Command
         $sendReminders = function () {
             // Get all task reminders within the given minute
             $reminders = TaskReminder::whereBetween('time', [now()->startOfMinute(), now()->endOfMinute()])
-                ->with(['task', 'recipient'])
+                ->with(['task', 'userReminder.user'])
                 ->get();
 
             $reminders->each(function (TaskReminder $reminder) {
                 // Send a reminder to the recipient
-                $reminder->recipient->notify(new TaskReminderNotification($reminder->task));
+                $reminder->userReminder->user->notify(new TaskReminderNotification($reminder->task));
             });
 
             // Mark the reminders as sent

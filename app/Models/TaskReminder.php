@@ -24,11 +24,11 @@ class TaskReminder extends Model
     }
 
     /**
-     * The user this reminder is for
+     * The user reminder setting this task reminder is for
      */
-    public function recipient(): BelongsTo
+    public function userReminder(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'recipient_id');
+        return $this->belongsTo(UserReminder::class);
     }
 
     /**

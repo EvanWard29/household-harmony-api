@@ -8,6 +8,8 @@ use App\Http\Resources\TaskResource;
 use App\Models\Group;
 use App\Models\Household;
 use App\Models\Task;
+use App\Models\User;
+use App\Models\UserReminder;
 use App\Services\TaskService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -47,6 +49,19 @@ class TaskController
         // Set the assigned users
         if ($request->filled('assigned')) {
             $task->assigned()->sync($request->input('assigned'));
+
+            // Create reminders if a deadline was set for each of the assigned users
+            if ($task->deadline) {
+                $task->assigned->each(function (User $assigned) use ($task) {
+                    // Schedule a reminder for each of the user's settings
+                    $assigned->reminders->each(function (UserReminder $reminder) use ($task) {
+                        $task->reminders()->create([
+                            'user_reminder_id' => $reminder->id,
+                            'time' => $task->deadline->subSeconds($reminder->length),
+                        ]);
+                    });
+                });
+            }
         }
 
         return new TaskResource($task);
