@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\Household;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\UserReminder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -30,5 +31,20 @@ class TaskFactory extends Factory
                 return User::factory()->for(Household::findOrFail($attributes['household_id']));
             },
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (Task $task) {
+            // Schedule reminders for assigned users
+            $task->assigned->each(function (User $user) use ($task) {
+                $user->reminders->each(function (UserReminder $reminder) use ($task) {
+                    $task->reminders()->create([
+                        'user_reminder_id' => $reminder->id,
+                        'time' => $task->deadline->subSeconds($reminder->length),
+                    ]);
+                });
+            });
+        });
     }
 }
