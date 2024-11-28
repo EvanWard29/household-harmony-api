@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->tinyText('title');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->enum('status', TaskStatusEnum::values());
             $table->dateTime('deadline')->nullable();
 
