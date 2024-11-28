@@ -19,9 +19,9 @@ class TaskRequest extends FormRequest
             'status' => [Rule::enum(TaskStatusEnum::class)],
             'deadline' => ['nullable', 'date_format:'.Carbon::ATOM],
 
-            'assigned' => ['array', 'exclude'],
             'assigned.*' => [
                 'int',
+                'exclude',
                 Rule::exists(User::class)
                     ->where('household_id', $this->user()->household_id),
             ],
