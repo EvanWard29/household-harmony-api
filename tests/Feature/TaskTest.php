@@ -6,6 +6,8 @@ use App\Enums\TaskStatusEnum;
 use App\Models\Group;
 use App\Models\Household;
 use App\Models\Task;
+use App\Models\TaskReminder;
+use App\Models\UserReminder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
@@ -108,7 +110,7 @@ class TaskTest extends TestCase
                 'status' => TaskStatusEnum::TODO,
                 'deadline' => fake()->dateTimeBetween('now', '+1 week')->format(\DateTime::ATOM),
                 'group_id' => $household->groups->random()->id,
-                'assigned' => $household->users->random(rand(1, 2))->pluck('id'),
+                'assigned' => $assigned = $household->users->random(rand(1, 2))->pluck('id'),
             ]
         );
 
@@ -117,10 +119,52 @@ class TaskTest extends TestCase
         // A task should have been created
         $this->assertDatabaseCount('tasks', 1);
 
-        $task = Task::first();
+        $task = Task::firstOrFail();
 
         // The task should have been assigned users
-        $this->assertNotEmpty($task->assigned);
+        $this->assertNotEmpty($task->assigned->whereIn('id', $assigned));
+
+        // Reminders should have been scheduled for the assigned users
+        $userReminders = UserReminder::whereIn('user_id', $assigned)->get();
+        $this->assertNotEmpty($task->reminders->whereIn('user_reminder_id', $userReminders->pluck('id')));
+    }
+
+    /**
+     * Test creating a task without setting a deadline
+     */
+    public function testStoreEmptyDeadline()
+    {
+        // Create a household
+        $household = Household::factory()->hasOwner()->withUsers()->create();
+
+        // Create some groups/categories
+        Group::factory()->for($household)->count(rand(2, 4))->create();
+
+        // Create a task and assign to one of the users
+        $response = $this->actingAs($household->owner)->postJson(
+            route('household.task.store', ['household' => $household]),
+            [
+                'title' => fake()->word(),
+                'description' => fake()->words(asText: true),
+                'status' => TaskStatusEnum::TODO,
+                'group_id' => $household->groups->random()->id,
+                'assigned' => $assigned = $household->users->random(rand(1, 2))->pluck('id'),
+            ]
+        );
+
+        $response->assertCreated();
+
+        // A task should have been created
+        $this->assertDatabaseCount('tasks', 1);
+
+        $task = Task::firstOrFail();
+
+        // The task should have been assigned users
+        $this->assertNotEmpty($task->assigned->whereIn('id', $assigned));
+
+        // Reminders should not have been scheduled for the assigned users
+        $userReminders = UserReminder::whereIn('user_id', $assigned)->get();
+        $this->assertEmpty($task->reminders->whereIn('user_reminder_id', $userReminders->pluck('id')));
     }
 
     /**
@@ -224,6 +268,92 @@ class TaskTest extends TestCase
 
         // The tasks group should have changed
         $this->assertTrue($task->group()->is($group));
+    }
+
+    /**
+     * Test updating the task's deadline
+     */
+    public function testUpdateDeadline()
+    {
+        // Create a household
+        $household = Household::factory()->hasOwner()->withUsers()->create();
+
+        // Create a task with assigned users
+        $task = Task::factory()
+            ->for($household->users->random(), 'owner')
+            ->hasAttached($household->users->random(rand(1, 2)), relationship: 'assigned')
+            ->create();
+
+        $reminders = $task->reminders;
+        if ($reminders->isEmpty()) {
+            $this->fail('There are no scheduled reminders.');
+        }
+
+        // Update the task's deadline
+        $response = $this->actingAs($task->owner)->patchJson(
+            route('household.task.update', ['household' => $household, 'task' => $task]),
+            [
+                'title' => $task->title,
+                'deadline' => fake()->dateTimeBetween('now', '+1 week')->format(\DateTime::ATOM),
+            ]
+        );
+
+        $response->assertOk();
+
+        // The existing reminders should have been deleted
+        $reminders->each(function (TaskReminder $reminder) {
+            $this->assertModelMissing($reminder);
+        });
+
+        $task->refresh();
+
+        // New reminders should have been scheduled
+        $this->assertNotEquals($reminders, $task->reminders);
+    }
+
+    /**
+     * Test updating the task's assigned users
+     */
+    public function testUpdateAssigned()
+    {
+        // Create a household
+        $household = Household::factory()->hasOwner()->withUsers(6)->create();
+
+        // Create a task with assigned users
+        $task = Task::factory()
+            ->for($household->users->random(), 'owner')
+            ->hasAttached($household->users->random(rand(1, 2)), relationship: 'assigned')
+            ->create();
+
+        $reminders = $task->reminders;
+        if ($reminders->isEmpty()) {
+            $this->fail('There are no scheduled reminders.');
+        }
+
+        // Update the task's assigned users
+        $response = $this->actingAs($task->owner)->patchJson(
+            route('household.task.update', ['household' => $household, 'task' => $task]),
+            [
+                'title' => $task->title,
+                'assigned' => $assigned = $household->users
+                    ->whereNotIn('id', $task->assigned->pluck('id'))
+                    ->random(rand(1, 2))
+                    ->pluck('id'),
+            ]
+        );
+
+        $response->assertOk();
+
+        // The existing reminders should have been deleted
+        $reminders->each(function (TaskReminder $reminder) {
+            $this->assertModelMissing($reminder);
+        });
+
+        $task->refresh();
+
+        // New reminders should have been scheduled for the new assigned users
+        $this->assertNotEmpty($task->reminders
+            ->whereIn('user_reminder_id', UserReminder::whereIn('user_id', $assigned)->pluck('id')));
     }
 
     /**
