@@ -7,6 +7,7 @@ use App\Models\Household;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserReminder;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -17,28 +18,35 @@ class TaskService
      *
      * @return Collection<Task>
      */
-    public function getTasks(User|Household $model): Collection
+    public function getTasks(User|Household $model, array $filters = []): Collection
     {
         $tasks = $model->tasks();
 
         // Filter tasks by status
-        if (request()->filled('status')) {
-            $tasks = $tasks->where('status', (request()->enum('status', TaskStatusEnum::class)));
+        if (! empty($filters['status'])) {
+            $tasks = $tasks->where('status', TaskStatusEnum::from($filters['status']));
         }
 
         // Filter tasks between the set date and time deadline
-        if (request()->filled('deadline')) {
-            $start = request()->date('deadline.start.date');
-            $end = request()->date('deadline.end.date');
+        if (! empty($filters['deadline'])) {
+            if (empty($filters['deadline']['start']['date']) || empty($filters['deadline']['end']['date'])) {
+                abort(
+                    \HttpStatus::HTTP_UNPROCESSABLE_ENTITY,
+                    'The `deadline.start.date` and `deadline.end.date` fields are required when `deadline` is present.'
+                );
+            }
 
-            if (request()->filled('deadline.start.time')) {
-                $start->setTimeFrom(request()->date('deadline.start.time'));
+            $start = Carbon::parse($filters['deadline']['start']['date']);
+            $end = Carbon::parse($filters['deadline']['end']['date']);
+
+            if (! empty($filters['deadline']['start']['time'])) {
+                $start->setTimeFrom($filters['deadline']['start']['time']);
             } else {
                 $start->startOfDay();
             }
 
-            if (request()->filled('deadline.end.time')) {
-                $end->setTimeFrom(request()->date('deadline.end.time'));
+            if (! empty($filters['deadline']['end']['time'])) {
+                $end->setTimeFrom($filters['deadline']['end']['time']);
             } else {
                 $end->endOfDay();
             }
@@ -47,15 +55,15 @@ class TaskService
         }
 
         // Filter tasks by assignee
-        if (request()->filled('assigned')) {
-            $tasks = $tasks->whereHas('assigned', function (Builder $query) {
-                $query->whereIn('id', request()->input('assigned'));
+        if (! empty($filters['assigned'])) {
+            $tasks = $tasks->whereHas('assigned', function (Builder $query) use ($filters) {
+                $query->whereIn('id', $filters['assigned']);
             });
         }
 
         // Filter tasks by group
-        if (request()->filled('group_id')) {
-            $tasks = $tasks->whereRelation('group', 'id', request()->integer('group_id'));
+        if (! empty($filters['group_id'])) {
+            $tasks = $tasks->whereRelation('group', 'id', $filters['group_id']);
         }
 
         $tasks->with(['assigned.roles', 'group']);

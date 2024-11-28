@@ -45,6 +45,6 @@ class UserController
      */
     public function tasks(TaskFilterRequest $request, Household $household, User $user): AnonymousResourceCollection
     {
-        return TaskResource::collection(app(TaskService::class)->getTasks($user));
+        return TaskResource::collection(app(TaskService::class)->getTasks($user, $request->validated()));
     }
 }

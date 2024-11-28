@@ -24,7 +24,7 @@ class TaskController
      */
     public function index(TaskFilterRequest $request, Household $household)
     {
-        return TaskResource::collection($this->service->getTasks($household));
+        return TaskResource::collection($this->service->getTasks($household, $request->validated()));
     }
 
     /**
