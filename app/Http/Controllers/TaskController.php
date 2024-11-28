@@ -54,7 +54,7 @@ class TaskController
             if ($task->deadline) {
                 $task->assigned->each(function (User $assigned) use ($task) {
                     // Schedule a reminder for each of the user's settings
-                    $assigned->reminders->each(function (UserReminder $reminder) use ($task) {
+                    $assigned->reminders->where('enabled', true)->each(function (UserReminder $reminder) use ($task) {
                         $task->reminders()->create([
                             'user_reminder_id' => $reminder->id,
                             'time' => $task->deadline->subSeconds($reminder->length),
