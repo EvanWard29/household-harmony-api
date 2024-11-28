@@ -49,20 +49,10 @@ class TaskController
         // Set the assigned users
         if ($request->filled('assigned')) {
             $task->assigned()->sync($request->input('assigned'));
-
-            // Create reminders if a deadline was set for each of the assigned users
-            if ($task->deadline) {
-                $task->assigned->each(function (User $assigned) use ($task) {
-                    // Schedule a reminder for each of the user's settings
-                    $assigned->reminders->where('enabled', true)->each(function (UserReminder $reminder) use ($task) {
-                        $task->reminders()->create([
-                            'user_reminder_id' => $reminder->id,
-                            'time' => $task->deadline->subSeconds($reminder->length),
-                        ]);
-                    });
-                });
-            }
         }
+
+        // Schedule task reminders
+        $this->service->scheduleReminders($task);
 
         return new TaskResource($task);
     }
@@ -92,6 +82,11 @@ class TaskController
         // Group the task
         if ($request->filled('group_id')) {
             $task->group()->associate(Group::findOrFail($request->integer('group_id')));
+        }
+
+        // Re-schedule reminders if the deadline or assigned users has changed
+        if ($request->filled('deadline') || $request->filled('assigned')) {
+            $this->service->scheduleReminders($task);
         }
 
         return new TaskResource($task);

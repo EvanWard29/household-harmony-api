@@ -6,6 +6,7 @@ use App\Enums\TaskStatusEnum;
 use App\Models\Household;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\UserReminder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -60,5 +61,31 @@ class TaskService
         $tasks->with(['assigned.roles', 'group']);
 
         return $tasks->get();
+    }
+
+    /**
+     * Schedule reminders for the given task
+     */
+    public function scheduleReminders(Task $task): void
+    {
+        // Skip tasks that do not have a deadline set
+        if (! $task->deadline) {
+            return;
+        }
+
+        // Remove any existing reminders
+        $task->reminders()->delete();
+
+        $task->loadMissing('assigned.reminders');
+
+        // Schedule reminders for each of the assigned user's enabled reminders
+        $task->assigned->each(function (User $assigned) use ($task) {
+            $assigned->reminders->where('enabled', true)->each(function (UserReminder $reminder) use ($task) {
+                $task->reminders()->create([
+                    'user_reminder_id' => $reminder->id,
+                    'time' => $task->deadline->subSeconds($reminder->length),
+                ]);
+            });
+        });
     }
 }
