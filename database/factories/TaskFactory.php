@@ -37,14 +37,16 @@ class TaskFactory extends Factory
     {
         return $this->afterCreating(function (Task $task) {
             // Schedule reminders for assigned users
-            $task->assigned->each(function (User $user) use ($task) {
-                $user->reminders->each(function (UserReminder $reminder) use ($task) {
-                    $task->reminders()->create([
-                        'user_reminder_id' => $reminder->id,
-                        'time' => $task->deadline->subSeconds($reminder->length),
-                    ]);
+            if ($task->deadline) {
+                $task->assigned->each(function (User $user) use ($task) {
+                    $user->reminders->each(function (UserReminder $reminder) use ($task) {
+                        $task->reminders()->create([
+                            'user_reminder_id' => $reminder->id,
+                            'time' => $task->deadline->subSeconds($reminder->length),
+                        ]);
+                    });
                 });
-            });
+            }
         });
     }
 }
