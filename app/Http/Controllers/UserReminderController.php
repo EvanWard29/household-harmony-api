@@ -7,19 +7,20 @@ use App\Http\Resources\UserResource;
 use App\Models\Household;
 use App\Models\User;
 use App\Models\UserReminder;
+use Illuminate\Http\JsonResponse;
 
 class UserReminderController
 {
     /**
      * Create a new reminder setting for the user
      */
-    public function store(UserReminderRequest $request, Household $household, User $user): UserResource
+    public function store(UserReminderRequest $request, Household $household, User $user): JsonResponse
     {
         $user->reminders()->create($request->validated());
 
         $user->load(['reminders']);
 
-        return new UserResource($user);
+        return (new UserResource($user))->response()->setStatusCode(\HttpStatus::HTTP_CREATED);
     }
 
     /**
