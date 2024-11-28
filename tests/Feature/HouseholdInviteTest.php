@@ -40,6 +40,9 @@ class HouseholdInviteTest extends TestCase
 
         // The new user should have received an invitation
         \Notification::assertSentTo($user, HouseholdInviteNotification::class);
+
+        // The new user should have default reminder settings
+        $this->assertNotEmpty($user->reminders);
     }
 
     /**
@@ -127,6 +130,9 @@ class HouseholdInviteTest extends TestCase
 
         // The new user should have the `child` role
         $this->assertTrue($user->hasRole(RolesEnum::CHILD));
+
+        // The new user should have default reminder settings
+        $this->assertNotEmpty($user->reminders);
     }
 
     /**

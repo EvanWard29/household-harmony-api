@@ -59,6 +59,9 @@ class AuthenticationTest extends TestCase
 
         // A verification email should have been sent to the user
         \Notification::assertSentTo($user, VerifyEmail::class);
+
+        // The user should have default reminder settings
+        $this->assertNotEmpty($user->reminders);
     }
 
     /**
