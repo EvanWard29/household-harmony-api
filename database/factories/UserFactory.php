@@ -79,4 +79,18 @@ class UserFactory extends Factory
             })
             ->afterCreating(fn (User $user) => $user->assignRole(RolesEnum::CHILD));
     }
+
+    /**
+     * Set this user as the owner of their household
+     */
+    public function isOwner(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            // Set user as the owner
+            $user->household->update(['owner_id' => $user->id]);
+
+            // Assign the user the admin role
+            $user->assignRole(RolesEnum::ADMIN);
+        });
+    }
 }
