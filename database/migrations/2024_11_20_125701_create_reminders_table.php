@@ -44,7 +44,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('user_reminders');
         Schema::dropIfExists('task_reminders');
+        Schema::dropIfExists('user_reminders');
     }
 };
