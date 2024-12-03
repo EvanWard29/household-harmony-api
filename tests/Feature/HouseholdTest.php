@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class HouseholdTest extends TestCase
 {
-    public function testShow()
+    public function test_show()
     {
         $userCount = rand(2, 5);
 
@@ -41,7 +41,7 @@ class HouseholdTest extends TestCase
         });
     }
 
-    public function testShowUnauthorized()
+    public function test_show_unauthorized()
     {
         // Create a user
         $user = User::factory()->create();
@@ -57,7 +57,7 @@ class HouseholdTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function testUpdate()
+    public function test_update()
     {
         // Create a household
         /** @var Household $household */
@@ -88,7 +88,7 @@ class HouseholdTest extends TestCase
         $this->assertEquals($user->id, $household->owner_id);
     }
 
-    public function testUpdateUnauthorized()
+    public function test_update_unauthorized()
     {
         // Create a household
         /** @var Household $household */
@@ -108,7 +108,7 @@ class HouseholdTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function testUpdateNonAdminOwner()
+    public function test_update_non_admin_owner()
     {
         // Create a household
         /** @var Household $household */
@@ -132,7 +132,7 @@ class HouseholdTest extends TestCase
         ]);
     }
 
-    public function testDeleteUser()
+    public function test_delete_user()
     {
         // Create a household with some additional users
         /** @var Household $household */
@@ -153,7 +153,7 @@ class HouseholdTest extends TestCase
         \Notification::assertSentTo($user, DeletedUserNotification::class);
     }
 
-    public function testDeleteOwner()
+    public function test_delete_owner()
     {
         // Create a household
         /** @var Household $household */
@@ -173,7 +173,7 @@ class HouseholdTest extends TestCase
         ]);
     }
 
-    public function testDeleteAdmin()
+    public function test_delete_admin()
     {
         // Create a household
         /** @var Household $household */
@@ -198,7 +198,7 @@ class HouseholdTest extends TestCase
     /**
      * Test assigning permissions to a household member
      */
-    public function testAssignPermissions()
+    public function test_assign_permissions()
     {
         // Create a household
         /** @var Household $household */
@@ -225,7 +225,7 @@ class HouseholdTest extends TestCase
     /**
      * Test setting a user as admin
      */
-    public function testAssignAdmin()
+    public function test_assign_admin()
     {
         // Create a household with some additional users
         /** @var Household $household */
@@ -253,7 +253,7 @@ class HouseholdTest extends TestCase
     /**
      * Test validating a request to set permissions
      */
-    public function testAssignPermissionsValidation()
+    public function test_assign_permissions_validation()
     {
         // Create a household
         /** @var Household $household */
@@ -282,7 +282,7 @@ class HouseholdTest extends TestCase
     /**
      * Test validating a request to set a user as admin
      */
-    public function testAssignAdminValidation()
+    public function test_assign_admin_validation()
     {
         // Create a household
         /** @var Household $household */
@@ -310,7 +310,7 @@ class HouseholdTest extends TestCase
     /**
      * Test assigning permissions as a non-admin user
      */
-    public function testAssignPermissionsAsNonAdmin()
+    public function test_assign_permissions_as_non_admin()
     {
         // Create a household
         /** @var Household $household */
@@ -340,7 +340,7 @@ class HouseholdTest extends TestCase
     /**
      * Test assigning permissions to another admin as an admin
      */
-    public function testAssignPermissionsToAdmin()
+    public function test_assign_permissions_to_admin()
     {
         // Create a household
         /** @var Household $household */
@@ -370,7 +370,7 @@ class HouseholdTest extends TestCase
     /**
      * Test assigning permissions to another user as an admin other than the owner
      */
-    public function testAssignPermissionsAsAdmin()
+    public function test_assign_permissions_as_admin()
     {
         // Create a household
         /** @var Household $household */
@@ -399,7 +399,7 @@ class HouseholdTest extends TestCase
     /**
      * Test assigning permissions to yourself
      */
-    public function testAssignOwnPermissions()
+    public function test_assign_own_permissions()
     {
         // Create a household
         /** @var Household $household */
@@ -426,7 +426,7 @@ class HouseholdTest extends TestCase
     /**
      * Test removing admin from a user
      */
-    public function testRemoveAdmin()
+    public function test_remove_admin()
     {
         // Create a household
         /** @var Household $household */

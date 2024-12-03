@@ -13,7 +13,7 @@ class UserTest extends TestCase
     /**
      * Test getting a user
      */
-    public function testShow()
+    public function test_show()
     {
         // Create a user
         $user = User::factory()->create();
@@ -37,7 +37,7 @@ class UserTest extends TestCase
     /**
      * Test updating a user's details
      */
-    public function testUpdate()
+    public function test_update()
     {
         // Create a user
         $user = User::factory()->create();
@@ -60,7 +60,7 @@ class UserTest extends TestCase
     /**
      * Test updating another user's details as an admin
      */
-    public function testUpdateAdmin()
+    public function test_update_admin()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -86,7 +86,7 @@ class UserTest extends TestCase
     /**
      * Test updating another user's details as a non-admin
      */
-    public function testUpdateNonAdmin()
+    public function test_update_non_admin()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -108,7 +108,7 @@ class UserTest extends TestCase
     /**
      * Test validating a request to update a user's username
      */
-    public function testUpdateUsernameValidation()
+    public function test_update_username_validation()
     {
         // Create a user
         $user = User::factory()->create();
@@ -130,7 +130,7 @@ class UserTest extends TestCase
     /**
      * Test getting a user's assigned tasks
      */
-    public function testTasks()
+    public function test_tasks()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers(10)->create();

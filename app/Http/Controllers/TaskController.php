@@ -8,8 +8,6 @@ use App\Http\Resources\TaskResource;
 use App\Models\Group;
 use App\Models\Household;
 use App\Models\Task;
-use App\Models\User;
-use App\Models\UserReminder;
 use App\Services\TaskService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 

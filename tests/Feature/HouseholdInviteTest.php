@@ -13,7 +13,7 @@ class HouseholdInviteTest extends TestCase
     /**
      * Test inviting a user to a household
      */
-    public function testInvite()
+    public function test_invite()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -48,7 +48,7 @@ class HouseholdInviteTest extends TestCase
     /**
      * Test inviting a user that already belongs to a household
      */
-    public function testInviteUnique()
+    public function test_invite_unique()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -75,7 +75,7 @@ class HouseholdInviteTest extends TestCase
     /**
      * Test validating an invite request
      */
-    public function testInviteValidation()
+    public function test_invite_validation()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -101,7 +101,7 @@ class HouseholdInviteTest extends TestCase
     /**
      * Test creating a child account for a household
      */
-    public function testChild()
+    public function test_child()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -138,7 +138,7 @@ class HouseholdInviteTest extends TestCase
     /**
      * Test creating a child account with an already taken username
      */
-    public function testChildUnique()
+    public function test_child_unique()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -170,7 +170,7 @@ class HouseholdInviteTest extends TestCase
     /**
      * Test validating a create child request
      */
-    public function testChildValidation()
+    public function test_child_validation()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();

@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class EmailVerificationTest extends TestCase
 {
-    public function testSend()
+    public function test_send()
     {
         // Create an unverified user
         $user = User::factory()->unverified()->create();
@@ -21,7 +21,7 @@ class EmailVerificationTest extends TestCase
         \Notification::assertSentTo($user, VerifyEmail::class);
     }
 
-    public function testSendValidation()
+    public function test_send_validation()
     {
         // Create a verified user
         $user = User::factory()->create();
@@ -35,7 +35,7 @@ class EmailVerificationTest extends TestCase
         ]);
     }
 
-    public function testVerify()
+    public function test_verify()
     {
         // Create an unverified user
         $user = User::factory()->unverified()->create();

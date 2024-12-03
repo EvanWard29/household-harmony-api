@@ -12,7 +12,7 @@ class PasswordConfirmationTest extends TestCase
     /**
      * Test making a request to an endpoint with the `password.confirm` middleware
      */
-    public function testTokenSuccess()
+    public function test_token_success()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -48,7 +48,7 @@ class PasswordConfirmationTest extends TestCase
      * Test making a request to an endpoint using the `password.confirm`
      * middleware without providing the `password_confirmation` token
      */
-    public function testTokenPresence()
+    public function test_token_presence()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -80,7 +80,7 @@ class PasswordConfirmationTest extends TestCase
     /**
      * Test making a request to an endpoint with the `password.confirm` middleware with a modified token
      */
-    public function testTokenEncryption()
+    public function test_token_encryption()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -116,7 +116,7 @@ class PasswordConfirmationTest extends TestCase
     /**
      * Test making a request to an endpoint with the `password_confirmation` middleware using an invalid token
      */
-    public function testTokenMismatch()
+    public function test_token_mismatch()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();

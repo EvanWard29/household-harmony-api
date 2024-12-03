@@ -11,7 +11,7 @@ class PasswordResetTest extends TestCase
     /**
      * Test requesting a password reset link
      */
-    public function testForgot()
+    public function test_forgot()
     {
         // Create a user
         $user = User::factory()->create();
@@ -34,7 +34,7 @@ class PasswordResetTest extends TestCase
     /**
      * Test resetting a user's password
      */
-    public function testReset()
+    public function test_reset()
     {
         // Create a user
         $user = User::factory()->create([
@@ -68,7 +68,7 @@ class PasswordResetTest extends TestCase
     /**
      * Test resetting a password with an invalid token
      */
-    public function testResetInvalidToken()
+    public function test_reset_invalid_token()
     {
         // Create a user
         $user = User::factory()->create();
@@ -96,7 +96,7 @@ class PasswordResetTest extends TestCase
     /**
      * Test validating a password reset request
      */
-    public function testResetValidation()
+    public function test_reset_validation()
     {
         // Create a user
         $user = User::factory()->create();

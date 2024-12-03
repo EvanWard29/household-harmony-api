@@ -12,7 +12,7 @@ class GroupTest extends TestCase
     /**
      * Test getting a list of a households groups/categories
      */
-    public function testIndex()
+    public function test_index()
     {
         // Create a household with groups
         $household = Household::factory()->hasOwner()->withUsers()->hasGroups(rand(2, 4))->create();
@@ -31,7 +31,7 @@ class GroupTest extends TestCase
     /**
      * Test creating a new group/category
      */
-    public function testStore()
+    public function test_store()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -54,7 +54,7 @@ class GroupTest extends TestCase
     /**
      * Test attempting to create a group without the correct permissions
      */
-    public function testStorePermissions()
+    public function test_store_permissions()
     {
         // Create a household with some additional users
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -75,7 +75,7 @@ class GroupTest extends TestCase
     /**
      * Test getting a specific group/category
      */
-    public function testShow()
+    public function test_show()
     {
         // Create a household with some groups
         $household = Household::factory()->hasOwner()->hasGroups(rand(2, 4))->create();
@@ -104,7 +104,7 @@ class GroupTest extends TestCase
     /**
      * Test updating the details of a group/category
      */
-    public function testUpdate()
+    public function test_update()
     {
         // Create a household with some groups
         $household = Household::factory()->hasOwner()->hasGroups(rand(2, 4))->create();
@@ -134,7 +134,7 @@ class GroupTest extends TestCase
     /**
      * Attempt to update a group as a user with the correct permission other than the admin
      */
-    public function testUpdatePermissions()
+    public function test_update_permissions()
     {
         // Create a household with some users and groups
         $household = Household::factory()->hasOwner()->withUsers()->hasGroups(rand(2, 4))->create();
@@ -168,7 +168,7 @@ class GroupTest extends TestCase
     /**
      * Test deleting a group/category
      */
-    public function testDestroy()
+    public function test_destroy()
     {
         // Create a household with some groups
         $household = Household::factory()->hasOwner()->hasGroups(rand(2, 4))->create();
@@ -190,7 +190,7 @@ class GroupTest extends TestCase
     /**
      * Attempt to delete a group as a user with the correct permission other than the admin
      */
-    public function testDestroyPermissions()
+    public function test_destroy_permissions()
     {
         // Create a household with some users and groups
         $household = Household::factory()->hasOwner()->withUsers()->hasGroups(rand(2, 4))->create();

@@ -26,7 +26,7 @@ class TaskServiceTest extends TestCase
     /**
      * Test filtering tasks between two given dates
      */
-    public function testFilterDate()
+    public function test_filter_date()
     {
         // Create a household
         $household = Household::factory()
@@ -67,7 +67,7 @@ class TaskServiceTest extends TestCase
     /**
      * Test attempting to filter tasks by deadline without providing dates
      */
-    public function testFilterEmptyDeadline()
+    public function test_filter_empty_deadline()
     {
         // Create a household
         $household = Household::factory()
@@ -103,7 +103,7 @@ class TaskServiceTest extends TestCase
     /**
      * Test filtering tasks between two given date times
      */
-    public function testFilterDateTime()
+    public function test_filter_date_time()
     {
         // Create a household
         $household = Household::factory()
@@ -146,7 +146,7 @@ class TaskServiceTest extends TestCase
     /**
      * Test filtering tasks by its status
      */
-    public function testFilterStatus()
+    public function test_filter_status()
     {
         // Create a household
         $household = Household::factory()
@@ -178,7 +178,7 @@ class TaskServiceTest extends TestCase
     /**
      * Test filtering tasks by group
      */
-    public function testFilterGroup()
+    public function test_filter_group()
     {
         // Create a household
         $household = Household::factory()
@@ -209,7 +209,7 @@ class TaskServiceTest extends TestCase
     /**
      * Test filtering tasks by assigned users
      */
-    public function testFilterAssigned()
+    public function test_filter_assigned()
     {
         // Create a household
         $household = Household::factory()
@@ -243,7 +243,7 @@ class TaskServiceTest extends TestCase
     /**
      * Test scheduling reminders for a task
      */
-    public function testScheduleReminders()
+    public function test_schedule_reminders()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -269,7 +269,7 @@ class TaskServiceTest extends TestCase
     /**
      * Test scheduling reminders with an empty task deadline
      */
-    public function testScheduleRemindersEmptyDeadline()
+    public function test_schedule_reminders_empty_deadline()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();

@@ -16,7 +16,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test registering a new user
      */
-    public function testRegistration()
+    public function test_registration()
     {
         // Generate some test data
         $data = [
@@ -67,7 +67,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test confirming an invited/pending user
      */
-    public function testRegistrationToken()
+    public function test_registration_token()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->create();
@@ -109,7 +109,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test validating a registration request
      */
-    public function testRegistrationValidation()
+    public function test_registration_validation()
     {
         // Generate some invalid test data
         $data = [
@@ -148,7 +148,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test registering creates a unique username
      */
-    public function testRegistrationUsername()
+    public function test_registration_username()
     {
         // Generate some test data
         $data = [
@@ -187,7 +187,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test logging in with an email
      */
-    public function testEmailLogin()
+    public function test_email_login()
     {
         // Create a user to log in with
         $user = User::factory()->create([
@@ -210,7 +210,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test logging in with a username
      */
-    public function testUsernameLogin()
+    public function test_username_login()
     {
         // Create a user to log in with
         $user = User::factory()->create([
@@ -233,7 +233,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test validating a login request
      */
-    public function testLoginValidation()
+    public function test_login_validation()
     {
         // Create a user to log in with
         $user = User::factory()->create([
@@ -259,7 +259,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test logging a user out
      */
-    public function testLogout()
+    public function test_logout()
     {
         // Create a user to log out with
         $user = User::factory()->token()->create();
@@ -282,7 +282,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test requesting a token with an email
      */
-    public function testEmailToken()
+    public function test_email_token()
     {
         // Create a user to request a token for
         $user = User::factory()->create([
@@ -315,7 +315,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test requesting a token with a username
      */
-    public function testUsernameToken()
+    public function test_username_token()
     {
         // Create a user to request a token for
         $user = User::factory()->create([
@@ -348,7 +348,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test validating a token request
      */
-    public function testTokenValidation()
+    public function test_token_validation()
     {
         // Create a user to request a token for
         $user = User::factory()->create();
@@ -376,7 +376,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test password validation for a token request
      */
-    public function testTokenPasswordValidation()
+    public function test_token_password_validation()
     {
         // Create a user to request a token for
         $user = User::factory()->create();
@@ -401,7 +401,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test confirming a password
      */
-    public function testConfirm()
+    public function test_confirm()
     {
         // Create a user to confirm their password for
         $user = User::factory()->create([
@@ -431,7 +431,7 @@ class AuthenticationTest extends TestCase
     /**
      * Test validation a confirm password request
      */
-    public function testConfirmValidation()
+    public function test_confirm_validation()
     {
         // Create a user to confirm their password for
         $user = User::factory()->create([

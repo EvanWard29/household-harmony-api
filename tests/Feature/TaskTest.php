@@ -17,7 +17,7 @@ class TaskTest extends TestCase
     /**
      * Test getting the tasks of a household
      */
-    public function testIndex()
+    public function test_index()
     {
         // Create a household with tasks
         $household = Household::factory()->hasTasks(5)->create();
@@ -38,7 +38,7 @@ class TaskTest extends TestCase
     /**
      * Test filtering a household's tasks
      */
-    public function testIndexFilter()
+    public function test_index_filter()
     {
         // Create a household
         $household = Household::factory()
@@ -93,7 +93,7 @@ class TaskTest extends TestCase
     /**
      * Test creating a new task
      */
-    public function testStore()
+    public function test_store()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -132,7 +132,7 @@ class TaskTest extends TestCase
     /**
      * Test creating a task without setting a deadline
      */
-    public function testStoreEmptyDeadline()
+    public function test_store_empty_deadline()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -170,7 +170,7 @@ class TaskTest extends TestCase
     /**
      * Test creating a task without the correct permissions
      */
-    public function testStorePermission()
+    public function test_store_permission()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -191,7 +191,7 @@ class TaskTest extends TestCase
     /**
      * Test getting a specific task
      */
-    public function testShow()
+    public function test_show()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -231,7 +231,7 @@ class TaskTest extends TestCase
     /**
      * Test updating a task
      */
-    public function testUpdate()
+    public function test_update()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -273,7 +273,7 @@ class TaskTest extends TestCase
     /**
      * Test updating the task's deadline
      */
-    public function testUpdateDeadline()
+    public function test_update_deadline()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -314,7 +314,7 @@ class TaskTest extends TestCase
     /**
      * Test updating the task's assigned users
      */
-    public function testUpdateAssigned()
+    public function test_update_assigned()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers(6)->create();
@@ -359,7 +359,7 @@ class TaskTest extends TestCase
     /**
      * Test updating a task without the correct permissions
      */
-    public function testUpdatePermission()
+    public function test_update_permission()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -391,7 +391,7 @@ class TaskTest extends TestCase
     /**
      * Test deleting a task
      */
-    public function testDestroy()
+    public function test_destroy()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();
@@ -416,7 +416,7 @@ class TaskTest extends TestCase
     /**
      * Test deleting a task without the correct permissions
      */
-    public function testDestroyPermission()
+    public function test_destroy_permission()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers()->create();

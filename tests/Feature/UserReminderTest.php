@@ -13,7 +13,7 @@ class UserReminderTest extends TestCase
     /**
      * Test creating new reminder settings for a user
      */
-    public function testStore()
+    public function test_store()
     {
         // Create a user
         $user = User::factory()->create();
@@ -37,7 +37,7 @@ class UserReminderTest extends TestCase
     /**
      * Test updating a user's reminder setting
      */
-    public function testUpdate()
+    public function test_update()
     {
         // Create a user
         $user = User::factory()->create();
@@ -70,7 +70,7 @@ class UserReminderTest extends TestCase
     /*
      * Test deleting a user's reminder setting
      */
-    public function testDestroy()
+    public function test_destroy()
     {
         // Create a user
         $user = User::factory()->create();
@@ -94,7 +94,7 @@ class UserReminderTest extends TestCase
     /**
      * Test enabling/disabling a user's reminder setting
      */
-    public function testToggle()
+    public function test_toggle()
     {
         // Create a user
         $user = User::factory()->create();
@@ -117,7 +117,7 @@ class UserReminderTest extends TestCase
     /**
      * Test reminders are not scheduled for disabled reminders
      */
-    public function testDisabledReminders()
+    public function test_disabled_reminders()
     {
         // Create a user
         $user = User::factory()->isOwner()->create();

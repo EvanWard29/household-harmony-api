@@ -14,7 +14,7 @@ class SendTaskReminderTest extends TestCase
     /**
      * Test sending scheduled task reminders
      */
-    public function testSendReminders()
+    public function test_send_reminders()
     {
         // Create a household
         $household = Household::factory()->hasOwner()->withUsers(6)->create();
