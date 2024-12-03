@@ -14,10 +14,10 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => $firstName = fake()->firstName(),
-            'last_name' => $lastName = fake()->lastName(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
-            'username' => $firstName.$lastName,
+            'username' => fake()->unique()->userName(),
             'email_verified_at' => now(),
             'password' => \Hash::make('password123!!'),
             'is_active' => true,
@@ -80,14 +80,17 @@ class UserFactory extends Factory
             ->afterCreating(fn (User $user) => $user->assignRole(RolesEnum::CHILD));
     }
 
-    public function configure(): static
+    /**
+     * Set this user as the owner of their household
+     */
+    public function isOwner(): static
     {
         return $this->afterCreating(function (User $user) {
-            if (! $user->household->owner_id) {
-                // Set the user as the owner of their household if not already set and assign them the `admin` role
-                $user->household->update(['owner_id' => $user->id]);
-                $user->assignRole(RolesEnum::ADMIN);
-            }
+            // Set user as the owner
+            $user->household->update(['owner_id' => $user->id]);
+
+            // Assign the user the admin role
+            $user->assignRole(RolesEnum::ADMIN);
         });
     }
 }

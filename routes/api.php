@@ -2,10 +2,13 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HouseholdController;
 use App\Http\Controllers\HouseholdInviteController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserReminderController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
@@ -45,36 +48,49 @@ Route::prefix('user')->name('user.')->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
-    // User routes
-    Route::prefix('user/{user}')
-        ->name('user.')
-        ->controller(UserController::class)
-        ->group(function () {
-            Route::get('', 'show')
-                ->can('view', 'user')
-                ->name('show');
-
-            Route::match(['put', 'patch'], '', 'update')
-                ->can('update', 'user')
-                ->name('update');
-        });
-
     // Household routes
     Route::prefix('household/{household}')
         ->name('household.')
+        ->middleware('can:view,household')
         ->group(function () {
             Route::controller(HouseholdController::class)->group(function () {
-                Route::get('', 'show')
-                    ->can('view', 'household')
-                    ->name('show');
+                Route::get('', 'show')->name('show');
 
                 Route::middleware('can:manage,household')->group(function () {
                     Route::match(['put', 'patch'], '', 'update')->name('update');
-                    Route::delete('{user}', 'deleteUser')->middleware('password.confirm')->name('delete-user');
-                    Route::post('{user}/roles', 'assignRoles')->name('assign-roles');
+                });
+
+                Route::prefix('user/{user}')->name('user.')->group(function () {
+                    Route::delete('/', 'deleteUser')
+                        ->middleware('password.confirm')
+                        ->name('delete');
+
+                    Route::post('permission', 'permissions')->name('set-permissions');
                 });
             });
 
+            // User routes
+            Route::prefix('user/{user}')
+                ->name('user.')
+                ->scopeBindings()
+                ->group(function () {
+                    Route::controller(UserController::class)->group(function () {
+                        Route::apiSingleton('/', UserController::class);
+                        Route::get('task', 'tasks')->name('task');
+                    });
+
+                    Route::controller(UserReminderController::class)
+                        ->name('reminder.')
+                        ->prefix('reminder')
+                        ->group(function () {
+                            Route::post('/', 'store')->name('store');
+                            Route::delete('/{reminder}', 'destroy')->name('destroy');
+                            Route::put('/{reminder}', 'update')->name('update');
+                            Route::post('/{reminder}', 'toggle')->name('toggle');
+                        });
+                });
+
+            // Invite routes
             Route::controller(HouseholdInviteController::class)
                 ->middleware('can:manage,household')
                 ->group(function () {
@@ -83,6 +99,18 @@ Route::middleware('auth:api')->group(function () {
                         ->name('invite');
 
                     Route::post('child', 'createChild')->name('create-child');
+                });
+
+            // Task routes
+            Route::controller(TaskController::class)
+                ->group(function () {
+                    Route::apiResource('task', TaskController::class);
+                });
+
+            // Group routes
+            Route::controller(GroupController::class)
+                ->group(function () {
+                    Route::apiResource('group', GroupController::class);
                 });
         });
 });

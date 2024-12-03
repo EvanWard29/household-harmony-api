@@ -26,17 +26,29 @@ class HouseholdFactory extends Factory
     public function hasOwner(?User $owner = null): static
     {
         return $this->afterCreating(function (Household $household) use ($owner) {
-            if (! $owner) {
-                $owner = User::factory()->create([
-                    'household_id' => $household->id,
-                ]);
+            if (! $owner && $household->users->isNotEmpty()) {
+                // Assign one of the existing users as the owner
+                $owner = $household->users->random();
+            } elseif (! $owner) {
+                // Create a new user to be the owner
+                $owner = User::factory()->for($household)->create();
             }
 
-            if (! $owner->hasRole(RolesEnum::ADMIN)) {
+            // Ensure the owner is an admin
+            if (! $owner->isAdmin()) {
                 $owner->assignRole(RolesEnum::ADMIN);
             }
 
             $household->owner()->associate($owner);
+            $household->save();
         });
+    }
+
+    /**
+     * Create the household with some additional users
+     */
+    public function withUsers(?int $count = null): static
+    {
+        return $this->has(User::factory(! $count ? rand(2, 5) : $count));
     }
 }

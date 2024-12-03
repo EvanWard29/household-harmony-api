@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\RolesEnum;
+use App\Http\Requests\PermissionRequest;
 use App\Http\Resources\HouseholdResource;
 use App\Http\Resources\UserResource;
 use App\Models\Household;
@@ -10,6 +11,7 @@ use App\Models\User;
 use App\Notifications\DeletedUserNotification;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Permission;
 
 class HouseholdController
 {
@@ -56,6 +58,8 @@ class HouseholdController
      */
     public function deleteUser(Request $request, Household $household, User $user): HouseholdResource
     {
+        \Gate::authorize('manage', $household);
+
         // Users cannot delete their account if they are the owner of the household
         if ($request->user()->id === $user->id && $household->owner_id === $user->id) {
             abort(
@@ -87,16 +91,37 @@ class HouseholdController
     }
 
     /**
-     * Assign a user some roles/permissions
+     * Set the permissions of a user
      */
-    public function assignRoles(Request $request, Household $household, User $user): UserResource
+    public function permissions(PermissionRequest $request, Household $household, User $user)
     {
-        $request->validate([
-            'roles' => ['required', 'array'],
-            'roles.*' => [Rule::enum(RolesEnum::class)],
-        ]);
+        \Gate::authorize('permissions', Household::class);
 
-        $user->syncRoles($request->input('roles'));
+        if (($user->isAdmin() || $request->filled('admin')) && $household->owner()->isNot($request->user())) {
+            abort(\HttpStatus::HTTP_FORBIDDEN, 'Only the owner can manage admins.');
+        }
+
+        if ($request->user()->is($user)) {
+            abort(\HttpStatus::HTTP_FORBIDDEN, 'Cannot change your own permissions.');
+        }
+
+        // Set user as admin
+        if ($request->filled('admin')) {
+            if ($request->boolean('admin')) {
+                // Remove any previous permissions as admins have all by default
+                $user->revokePermissionTo(Permission::all());
+
+                // Assign the user the admin role
+                $user->assignRole(RolesEnum::ADMIN);
+            } else {
+                $user->removeRole(RolesEnum::ADMIN);
+            }
+        }
+
+        // Assign permissions
+        if ($request->filled('permissions')) {
+            $user->syncPermissions($request->input('permissions'));
+        }
 
         return new UserResource($user);
     }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\PermissionsEnum;
 use App\Enums\RolesEnum;
 use App\Http\Middleware\PasswordConfirmationMiddleware;
 use App\Models\Household;
@@ -133,22 +134,17 @@ class HouseholdTest extends TestCase
 
     public function testDeleteUser()
     {
-        // Create a household
+        // Create a household with some additional users
         /** @var Household $household */
-        $household = Household::factory()->hasOwner()->create();
-
-        // Create some additional users for the household
-        User::factory()->for($household)->count(3)->create();
+        $household = Household::factory()->hasOwner()->withUsers()->create();
 
         // Get a user to remove that is not the owner/admin
-        $user = $household->users->where(function (User $user) use ($household) {
-            return $user->id != $household->owner_id;
-        })->random();
+        $user = $household->users->where('id', '!=', $household->owner_id)->random();
 
         // Attempt to remove one of the users
         $response = $this->actingAs($household->owner)
             ->withoutMiddleware(PasswordConfirmationMiddleware::class)
-            ->deleteJson(route('household.delete-user', ['household' => $household, 'user' => $user]));
+            ->deleteJson(route('household.user.delete', ['household' => $household, 'user' => $user]));
 
         $response->assertOk();
 
@@ -167,7 +163,7 @@ class HouseholdTest extends TestCase
         $response = $this->actingAs($household->owner)
             ->withoutMiddleware(PasswordConfirmationMiddleware::class)
             ->deleteJson(
-                route('household.delete-user', ['household' => $household, 'user' => $household->owner])
+                route('household.user.delete', ['household' => $household, 'user' => $household->owner])
             );
 
         $response->assertForbidden();
@@ -190,7 +186,7 @@ class HouseholdTest extends TestCase
         $response = $this->actingAs($household->owner)
             ->withoutMiddleware(PasswordConfirmationMiddleware::class)
             ->deleteJson(
-                route('household.delete-user', ['household' => $household, 'user' => $user])
+                route('household.user.delete', ['household' => $household, 'user' => $user])
             );
 
         $response->assertForbidden();
@@ -200,12 +196,211 @@ class HouseholdTest extends TestCase
     }
 
     /**
-     * Test assigning roles to a household member
+     * Test assigning permissions to a household member
      */
-    public function testAssignRoles()
+    public function testAssignPermissions()
     {
-        // TODO: Add support for additional roles
+        // Create a household
+        /** @var Household $household */
+        $household = Household::factory()->hasOwner()->create();
 
+        // Create some additional users for the household
+        $users = User::factory()->for($household)->count(3)->create();
+
+        // Attempt to assign a user all permissions
+        $response = $this->actingAs($household->owner)->postJson(
+            route(
+                'household.user.set-permissions',
+                ['household' => $household, 'user' => $user = $users->random()]
+            ),
+            [
+                'permissions' => PermissionsEnum::cases(),
+            ]
+        );
+
+        $response->assertOk();
+        $this->assertTrue($user->hasAllPermissions(PermissionsEnum::cases()));
+    }
+
+    /**
+     * Test setting a user as admin
+     */
+    public function testAssignAdmin()
+    {
+        // Create a household with some additional users
+        /** @var Household $household */
+        $household = Household::factory()->hasOwner()->withUsers()->create();
+
+        // Get a random user to assign admin
+        $user = $household->users->where('id', '!=', $household->owner_id)->random();
+
+        // Attempt to assign a user the admin role
+        $response = $this->actingAs($household->owner)->postJson(
+            route(
+                'household.user.set-permissions',
+                ['household' => $household, 'user' => $user]
+            ),
+            [
+                'admin' => true,
+            ]
+        );
+
+        $response->assertOk();
+        $this->assertTrue($user->hasRole(RolesEnum::ADMIN));
+        $this->assertTrue($user->hasAllPermissions(PermissionsEnum::cases()));
+    }
+
+    /**
+     * Test validating a request to set permissions
+     */
+    public function testAssignPermissionsValidation()
+    {
+        // Create a household
+        /** @var Household $household */
+        $household = Household::factory()->hasOwner()->create();
+
+        // Create some additional users for the household
+        $users = User::factory()->for($household)->count(3)->create();
+
+        // Attempt to assign a user some permissions
+        $response = $this->actingAs($household->owner)->postJson(
+            route(
+                'household.user.set-permissions',
+                ['household' => $household, 'user' => $users->random()]
+            ),
+            [
+                'permissions' => [
+                    fake()->words(asText: true),
+                ],
+            ]
+        );
+
+        $response->assertUnprocessable();
+        $response->assertJson(['message' => 'The selected permissions.0 is invalid.']);
+    }
+
+    /**
+     * Test validating a request to set a user as admin
+     */
+    public function testAssignAdminValidation()
+    {
+        // Create a household
+        /** @var Household $household */
+        $household = Household::factory()->hasOwner()->create();
+
+        // Create some additional users for the household
+        $users = User::factory()->for($household)->count(3)->create();
+
+        // Attempt to assign a user the admin role with permissions
+        $response = $this->actingAs($household->owner)->postJson(
+            route(
+                'household.user.set-permissions',
+                ['household' => $household, 'user' => $users->random()]
+            ),
+            [
+                'admin' => true,
+                'permissions' => PermissionsEnum::cases(),
+            ]
+        );
+
+        $response->assertUnprocessable();
+        $response->assertJson(['message' => 'The permissions field must be missing when admin is true.']);
+    }
+
+    /**
+     * Test assigning permissions as a non-admin user
+     */
+    public function testAssignPermissionsAsNonAdmin()
+    {
+        // Create a household
+        /** @var Household $household */
+        $household = Household::factory()->hasOwner()->create();
+
+        // Create some additional users for the household
+        $users = User::factory()->for($household)->count(3)->create();
+
+        // Get a user to request as
+        $user = $users->random();
+
+        // Attempt to assign permissions to a user
+        $response = $this->actingAs($user)->postJson(
+            route(
+                'household.user.set-permissions',
+                ['household' => $household, 'user' => $users->where('id', '!=', $user->id)->random()]
+            ),
+            [
+                'permissions' => PermissionsEnum::cases(),
+            ]
+        );
+
+        $response->assertForbidden();
+        $response->assertJson(['message' => 'Only admins can modify permissions.']);
+    }
+
+    /**
+     * Test assigning permissions to another admin as an admin
+     */
+    public function testAssignPermissionsToAdmin()
+    {
+        // Create a household
+        /** @var Household $household */
+        $household = Household::factory()->hasOwner()->create();
+
+        // Create some additional users for the household
+        $users = User::factory()->for($household)->count(3)->create();
+
+        // Get a user to request as and set as admin
+        $user = $users->random()->assignRole(RolesEnum::ADMIN);
+
+        // Attempt to assign permissions to the owner
+        $response = $this->actingAs($user)->postJson(
+            route(
+                'household.user.set-permissions',
+                ['household' => $household, 'user' => $household->owner]
+            ),
+            [
+                'admin' => false,
+            ]
+        );
+
+        $response->assertForbidden();
+        $response->assertJson(['message' => 'Only the owner can manage admins.']);
+    }
+
+    /**
+     * Test assigning permissions to another user as an admin other than the owner
+     */
+    public function testAssignPermissionsAsAdmin()
+    {
+        // Create a household
+        /** @var Household $household */
+        $household = Household::factory()->hasOwner()->create();
+
+        // Create some additional users for the household
+        $users = User::factory()->for($household)->count(3)->create();
+
+        // Get a user to request as and set as admin
+        $user = $users->random()->assignRole(RolesEnum::ADMIN);
+
+        // Attempt to assign permissions to a random user
+        $response = $this->actingAs($user)->postJson(
+            route(
+                'household.user.set-permissions',
+                ['household' => $household, 'user' => $users->where('id', '!=', $user->id)->random()]
+            ),
+            [
+                'permissions' => PermissionsEnum::cases(),
+            ]
+        );
+
+        $response->assertOk();
+    }
+
+    /**
+     * Test assigning permissions to yourself
+     */
+    public function testAssignOwnPermissions()
+    {
         // Create a household
         /** @var Household $household */
         $household = Household::factory()->hasOwner()->create();
@@ -213,22 +408,49 @@ class HouseholdTest extends TestCase
         // Create some additional users for the household
         User::factory()->for($household)->count(3)->create();
 
-        // Get a user to add the `admin` role to
-        $user = $household->users->where(function (User $user) use ($household) {
-            return $user->id != $household->owner_id;
-        })->random();
-
-        // Attempt to assign the user the `admin` role
+        // Attempt to assign permissions yourself
         $response = $this->actingAs($household->owner)->postJson(
-            route('household.assign-roles', ['household' => $household, 'user' => $user]),
+            route(
+                'household.user.set-permissions',
+                ['household' => $household, 'user' => $household->owner]
+            ),
             [
-                'roles' => [
-                    RolesEnum::ADMIN->value,
-                ],
+                'permissions' => PermissionsEnum::cases(),
+            ]
+        );
+
+        $response->assertForbidden();
+        $response->assertJson(['message' => 'Cannot change your own permissions.']);
+    }
+
+    /**
+     * Test removing admin from a user
+     */
+    public function testRemoveAdmin()
+    {
+        // Create a household
+        /** @var Household $household */
+        $household = Household::factory()->hasOwner()->create();
+
+        // Create some additional users for the household
+        $users = User::factory()->for($household)->count(3)->create();
+
+        // Get a user and set as admin
+        $user = $users->random()->assignRole(RolesEnum::ADMIN);
+
+        // Remove admin from the user
+        $response = $this->actingAs($household->owner)->postJson(
+            route(
+                'household.user.set-permissions',
+                ['household' => $household, 'user' => $user]
+            ),
+            [
+                'admin' => false,
+                'permissions' => PermissionsEnum::cases(),
             ]
         );
 
         $response->assertOk();
-        $this->assertTrue($user->hasRole(RolesEnum::ADMIN));
+        $this->assertFalse($user->hasRole(RolesEnum::ADMIN));
     }
 }

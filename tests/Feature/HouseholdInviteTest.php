@@ -29,6 +29,7 @@ class HouseholdInviteTest extends TestCase
         );
 
         $response->assertOk();
+        $household->refresh();
 
         // A new user should have been created for the household
         $this->assertCount(2, $household->users);
@@ -39,6 +40,9 @@ class HouseholdInviteTest extends TestCase
 
         // The new user should have received an invitation
         \Notification::assertSentTo($user, HouseholdInviteNotification::class);
+
+        // The new user should have default reminder settings
+        $this->assertNotEmpty($user->reminders);
     }
 
     /**
@@ -115,6 +119,7 @@ class HouseholdInviteTest extends TestCase
         );
 
         $response->assertCreated();
+        $household->refresh();
 
         // A new user should have been created for the household
         $this->assertCount(2, $household->users);
@@ -125,6 +130,9 @@ class HouseholdInviteTest extends TestCase
 
         // The new user should have the `child` role
         $this->assertTrue($user->hasRole(RolesEnum::CHILD));
+
+        // The new user should have default reminder settings
+        $this->assertNotEmpty($user->reminders);
     }
 
     /**

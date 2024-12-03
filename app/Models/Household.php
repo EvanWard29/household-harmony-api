@@ -30,4 +30,20 @@ class Household extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    /**
+     * Tasks belonging to the household
+     */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * The groups/categories of the household
+     */
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class);
+    }
 }
