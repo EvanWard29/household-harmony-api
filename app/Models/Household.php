@@ -55,4 +55,12 @@ class Household extends Model
     {
         return $this->hasOne(Subscription::class);
     }
+
+    /**
+     * Check if the household is subscribed
+     */
+    public function isSubscribed(): bool
+    {
+        return $this->has('subscription')->exists();
+    }
 }

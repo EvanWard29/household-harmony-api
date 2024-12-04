@@ -130,6 +130,45 @@ class TaskTest extends TestCase
     }
 
     /**
+     * Test households without a subscription cannot exceed the task limit
+     */
+    public function test_store_freemium_limit()
+    {
+        // Create a household without a subscription and 30 tasks already
+        $household = Household::factory()->hasOwner()->withUsers()->create();
+
+        Task::factory(30)->for($household)->sequence(['owner_id' => $household->users->random()->id])->create();
+
+        // Attempt to create a new task
+        $response = $this->actingAs($household->owner)->postJson(
+            route('household.task.store', ['household' => $household]),
+            ['title' => fake()->word()]
+        );
+
+        $response->assertForbidden();
+        $response->assertJson(['message' => 'Subscription required to create more tasks.']);
+    }
+
+    /**
+     * Test there is no limit on the number of tasks for households with a subscription
+     */
+    public function test_store_premium_limit()
+    {
+        // Create a household without a subscription and 30 tasks already
+        $household = Household::factory()->subscribed()->hasOwner()->withUsers()->create();
+
+        Task::factory(30)->for($household)->sequence(['owner_id' => $household->users->random()->id])->create();
+
+        // Attempt to create a new task
+        $response = $this->actingAs($household->owner)->postJson(
+            route('household.task.store', ['household' => $household]),
+            ['title' => fake()->word()]
+        );
+
+        $response->assertCreated();
+    }
+
+    /**
      * Test creating a task without setting a deadline
      */
     public function test_store_empty_deadline()
