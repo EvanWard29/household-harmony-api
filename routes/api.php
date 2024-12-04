@@ -84,7 +84,7 @@ Route::middleware('auth:api')->group(function () {
                         ->name('reminder.')
                         ->prefix('reminder')
                         ->group(function () {
-                            Route::middleware('subscribed')->group(function () {
+                            Route::middleware('household.subscribed')->group(function () {
                                 Route::post('/', 'store')->name('store');
                                 Route::delete('/{reminder}', 'destroy')->name('destroy');
                                 Route::put('/{reminder}', 'update')->name('update');

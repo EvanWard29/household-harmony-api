@@ -14,8 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->alias(['password.confirm' => PasswordConfirmationMiddleware::class]);
-        $middleware->alias(['subscribed' => SubscriptionMiddleware::class]);
+        $middleware->alias([
+            'password.confirm' => PasswordConfirmationMiddleware::class,
+            'household.subscribed' => SubscriptionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
