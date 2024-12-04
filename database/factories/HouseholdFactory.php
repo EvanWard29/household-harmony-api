@@ -51,4 +51,17 @@ class HouseholdFactory extends Factory
     {
         return $this->has(User::factory(! $count ? rand(2, 5) : $count));
     }
+
+    /**
+     * Create the household with a subscription
+     */
+    public function subscribed(): static
+    {
+        return $this->afterCreating(function (Household $household) {
+            $household->subscription()->create([
+                'provider' => fake()->randomElement(['google-play', 'app-store']),
+                'subscription_id' => \Str::random(),
+            ]);
+        });
+    }
 }
