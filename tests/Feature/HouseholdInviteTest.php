@@ -194,4 +194,97 @@ class HouseholdInviteTest extends TestCase
             ],
         ]);
     }
+
+    /**
+     * Test inviting more than 4 users without a subscription is forbidden
+     */
+    public function test_freemium_invite()
+    {
+        // Create a household with 4 users
+        $household = Household::factory()->hasOwner()->withUsers(4)->create();
+
+        // Attempt to invite an additional user
+        $response = $this->actingAs($household->owner)->postJson(
+            route('household.invite', ['household' => $household]),
+            [
+                'first_name' => fake()->firstName(),
+                'last_name' => fake()->lastName(),
+                'email' => fake()->safeEmail(),
+            ]
+        );
+
+        $response->assertForbidden();
+        $response->assertJson(['message' => 'Subscription required for households bigger than 4 users.']);
+    }
+
+    /**
+     * Test inviting more than 4 users with a subscription is allowed
+     */
+    public function test_premium_invite()
+    {
+        // Create a household with 4 users
+        $household = Household::factory()->hasOwner()->withUsers(4)->subscribed()->create();
+
+        // Attempt to invite an additional user
+        $response = $this->actingAs($household->owner)->postJson(
+            route('household.invite', ['household' => $household]),
+            [
+                'first_name' => fake()->firstName(),
+                'last_name' => fake()->lastName(),
+                'email' => fake()->safeEmail(),
+            ]
+        );
+
+        $response->assertOk();
+
+        $this->assertCount(5, $household->users()->get());
+        \Notification::assertSentTimes(HouseholdInviteNotification::class, 1);
+    }
+
+    /**
+     * Test creating a child user without a subscription and having 4 users already is forbidden
+     */
+    public function test_freemium_child()
+    {
+        // Create a household with 4 users
+        $household = Household::factory()->hasOwner()->withUsers(4)->create();
+
+        // Attempt to create an additional child user
+        $response = $this->actingAs($household->owner)->postJson(
+            route('household.create-child', ['household' => $household]),
+            [
+                'first_name' => fake()->firstName(),
+                'last_name' => fake()->lastName(),
+                'username' => fake()->userName(),
+            ]
+        );
+
+        $response->assertForbidden();
+        $response->assertJson(['message' => 'Subscription required for households bigger than 4 users.']);
+    }
+
+    /**
+     * Test creating a child user with a subscription and having 4 users already is allowed
+     */
+    public function test_premium_child()
+    {
+        // Create a household with 4 users
+        $household = Household::factory()->hasOwner()->withUsers(4)->subscribed()->create();
+
+        // Attempt to create an additional child user
+        $response = $this->actingAs($household->owner)->postJson(
+            route('household.create-child', ['household' => $household]),
+            [
+                'first_name' => fake()->firstName(),
+                'last_name' => fake()->lastName(),
+                'username' => fake()->userName(),
+                'password' => $password = 'password123!!',
+                'password_confirmation' => $password,
+            ]
+        );
+
+        $response->assertCreated();
+
+        $this->assertCount(5, $household->users()->get());
+    }
 }

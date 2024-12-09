@@ -92,6 +92,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if the user's household has a premium subscription
+     */
+    public function isSubscribed(): bool
+    {
+        return $this->household()->has('subscription')->exists();
+    }
+
+    /**
      * The `guard_name` to use for roles/permissions
      */
     public function guardName(): string

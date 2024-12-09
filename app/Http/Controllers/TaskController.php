@@ -32,6 +32,14 @@ class TaskController
     {
         $this->authorize('create', Task::class);
 
+        // Prevent task creation if the household has reached its limit
+        abort_if(
+            ! $household->isSubscribed()
+                && $household->tasks()->count() >= config('freemium.task_limit'),
+            \HttpStatus::HTTP_FORBIDDEN,
+            'Subscription required to create more tasks.'
+        );
+
         $task = $request->user()->household->tasks()->make($request->validated());
 
         // Set the owner/creator of the task

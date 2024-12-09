@@ -79,13 +79,17 @@ Route::middleware('auth:api')->group(function () {
                         Route::get('task', 'tasks')->name('task');
                     });
 
+                    // User reminder routes
                     Route::controller(UserReminderController::class)
                         ->name('reminder.')
                         ->prefix('reminder')
                         ->group(function () {
-                            Route::post('/', 'store')->name('store');
-                            Route::delete('/{reminder}', 'destroy')->name('destroy');
-                            Route::put('/{reminder}', 'update')->name('update');
+                            Route::middleware('household.subscribed')->group(function () {
+                                Route::post('/', 'store')->name('store');
+                                Route::delete('/{reminder}', 'destroy')->name('destroy');
+                                Route::put('/{reminder}', 'update')->name('update');
+                            });
+
                             Route::post('/{reminder}', 'toggle')->name('toggle');
                         });
                 });

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Household;
 use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
@@ -15,8 +16,11 @@ class UserReminderTest extends TestCase
      */
     public function test_store()
     {
+        // Create a subscribed household
+        $household = Household::factory()->subscribed()->create();
+
         // Create a user
-        $user = User::factory()->create();
+        $user = User::factory()->for($household)->create();
 
         // Attempt to create a reminder
         $response = $this->actingAs($user)->postJson(
@@ -39,8 +43,11 @@ class UserReminderTest extends TestCase
      */
     public function test_update()
     {
+        // Create a subscribed household
+        $household = Household::factory()->subscribed()->create();
+
         // Create a user
-        $user = User::factory()->create();
+        $user = User::factory()->for($household)->create();
 
         // Update the user's default 2-hour reminder to be a 12-hour reminder
         $response = $this->actingAs($user)->putJson(
@@ -72,8 +79,11 @@ class UserReminderTest extends TestCase
      */
     public function test_destroy()
     {
+        // Create a subscribed household
+        $household = Household::factory()->subscribed()->create();
+
         // Create a user
-        $user = User::factory()->create();
+        $user = User::factory()->for($household)->create();
 
         // Delete one of the user's reminders
         $response = $this->actingAs($user)->deleteJson(route(

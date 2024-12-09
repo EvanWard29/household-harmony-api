@@ -14,10 +14,4 @@ class UserReminderRequest extends FormRequest
             'enabled' => ['required', 'bool'],
         ];
     }
-
-    public function authorize(): bool
-    {
-        // TODO: Check if user has subscription to make custom reminders
-        return true;
-    }
 }
