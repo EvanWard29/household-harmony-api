@@ -1,0 +1,232 @@
+{
+    "openapi": "3.1.1",
+    "info": {
+        "title": "Household Harmony",
+        "description": "The API specification for the Household Harmony backend.",
+        "version": "0.1.0"
+    },
+    "servers": [
+        {
+            "url": "https://household-harmony.co.uk/api",
+            "description": "Production"
+        },
+        {
+            "url": "http://household-harmony.test/api",
+            "description": "Local"
+        }
+    ],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "description": "Registers a new user",
+                "summary": "Register user",
+                "tags": [
+                    "Authentication"
+                ],
+                "requestBody": {
+                    "description": "The expected request body for registering a new user.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "required": true
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "required": true
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "required": true
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minimum": 8,
+                                        "required": true,
+                                        "description": "Must contain a minimum of 1 letter, number, symbol, and a minimum of 8 characters."
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "minimum": 8,
+                                        "required": true,
+                                        "description": "Must match value of `password` field."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returns the created user.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/user"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/unprocessable"
+                    }
+                }
+            }
+        },
+        "/auth/register/{token}": {
+            "post": {
+                "description": "Register an invited user.",
+                "summary": "Register invited user",
+                "tags": [
+                    "Authentication"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The invite token of the invited user.",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "password": {
+                                        "type": "string",
+                                        "minimum": 8,
+                                        "required": true,
+                                        "description": "Must contain a minimum of 1 letter, number, symbol, and a minimum of 8 characters."
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "minimum": 8,
+                                        "required": true,
+                                        "description": "Must match value of `password` field."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "unprocessable": {
+                "description": "Invalid request body",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Summary of the error."
+                                },
+                                "errors": {
+                                    "type": "object",
+                                    "description": "Lists fields that are invalid and why."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "user": {
+                "type": "object",
+                "description": "The User object.",
+                "properties": {
+                    "id": {
+                        "type": "int",
+                        "readOnly": true
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "email_verified_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "is_active": {
+                        "type": "bool",
+                        "description": "Marks whether the user has gone through the registration process and is confirmed.",
+                        "readOnly": true
+                    },
+                    "is_admin": {
+                        "type": "bool",
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "household_id": {
+                        "type": "int",
+                        "description": "The household the user belongs to.",
+                        "readOnly": true
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "description": "A list of permissions the user has.",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "task.delete",
+                                "task.create",
+                                "task.edit",
+                                "member.manage",
+                                "member.edit",
+                                "household.edit",
+                                "group.manage"
+                            ]
+                        },
+                        "readOnly": true
+                    }
+                }
+            }
+        },
+        "requestBodies": {
+        }
+    }
+}
